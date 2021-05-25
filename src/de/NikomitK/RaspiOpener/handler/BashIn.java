@@ -9,6 +9,10 @@ public class BashIn {
         Runtime.getRuntime().exec(cmd);
     }
 
+    public static void createFile(String file) throws IOException {
+        exec("sudo touch " + file);
+    }
+
     public static void clearFile(String file) throws IOException {
         exec("sudo truncate -s 0 " + file);
     }

@@ -1,5 +1,6 @@
 package de.NikomitK.RaspiOpener.main;
 
+import de.NikomitK.RaspiOpener.handler.BashIn;
 import de.NikomitK.RaspiOpener.handler.Printer;
 import lombok.Getter;
 
@@ -55,15 +56,15 @@ public class Main {
                     System.out.println("Unknown arg: " + s);
             }
         }
-//        gets removed in the next update, just here in case the replacement doesn't work reliably
+
         if(!keyPasStore.exists()) {
-            keyPasStore.createNewFile();
+            BashIn.createFile(keyPasStore.getName());
         }
         if(!otpStore.exists()) {
-            otpStore.createNewFile();
+            BashIn.createFile(otpStore.getName());
         }
         if(!nonceStore.exists()) {
-            nonceStore.createNewFile();
+            BashIn.createFile(nonceStore.getName());
         }
         //new File("keyPasStore.txt").createNewFile();
         //new File("otpStore.txt").createNewFile();
