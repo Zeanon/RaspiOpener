@@ -220,7 +220,7 @@ public class Handler {
             }
             if (isValid) {
                 System.out.println("Door is being opened with OTP...");
-                GpioController.activate(Integer.parseInt(openTime));
+                GpioUtils.activate(Integer.parseInt(openTime));
                 Printer.printToFile(dateF.format(new Date()) + ": Door is being opened by OTP", logfileName, true);
                 System.out.println("OTPSTORE LÄNGE " + otps.size());
                 otps.remove(position);
@@ -277,7 +277,7 @@ public class Handler {
 
         if (oriHash.equals(deMsg.substring(0, posHash))) {
             System.out.println("Door is being opened...");
-            GpioController.activate(Integer.parseInt(deMsg.substring(posHash + 1)));
+            GpioUtils.activate(Integer.parseInt(deMsg.substring(posHash + 1)));
             Printer.printToFile(dateF.format(new Date()) + ": Door is being opened", logfileName, true);
         } else {
             System.out.println("a wrong password was used");
@@ -301,7 +301,7 @@ public class Handler {
         if(oriHash.equals(pMsg.substring(0, posSem))){
             try{
                 System.out.println("Door is being opened...");
-                GpioController.activate(3000);
+                GpioUtils.activate(3000);
                 Printer.printToFile(dateF.format(new Date()) + ": Door is being opened", logfileName, true);
             } catch (IOException | InterruptedException e) {
                 return Error.SERVER_ERROR;
