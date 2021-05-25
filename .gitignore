@@ -22,3 +22,7 @@
 # Extra
 .sync/
 Icon*
+
+# Added by cargo
+
+/target
