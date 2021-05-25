@@ -4,10 +4,17 @@ import de.NikomitK.RaspiOpener.main.Main;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 
 public class Handler {
     public String key;
@@ -25,19 +32,21 @@ public class Handler {
         this.debug = Main.isDebug();
     }
 
-    public String storeKey(String pMsg) throws IOException {
+    public Error storeKey(String pMsg) throws IOException {
         key = pMsg;
         Printer.printToFile(key, Main.getKeyPasStore().getName(), false);
         Printer.printToFile(dateF.format(new Date()) + ": Key set to: " + key, logfileName, true);
         if(key == null) {
             Printer.printToFile(dateF.format(new Date()) + ": Error #01 while setting key " + key, logfileName, true);
-            return "01";
+            return Error.KEY_UNSAVED;
         }
-        return null;
+        return Error.OK;
     }
 
-    public String storePW(String pMsg) throws Exception {
-        if(!oriHash.equals("")) return "02";
+    public Error storePW(String pMsg) throws Exception {
+        if(!oriHash.equals("")) {
+            return Error.PASSWORD_EXISTS;
+        }
         String enHash = null;
         String nonce = null;
         for (int i = 0; i < pMsg.length(); i++) {
@@ -49,49 +58,58 @@ public class Handler {
         oriHash = Decryption.decrypt(key, nonce, enHash);
         Printer.printToFile(oriHash, Main.getKeyPasStore().getName(), true);
         Printer.printToFile(dateF.format(new Date()) + ": The password hash was set to: " + oriHash, logfileName, true);
-        return null;
+        return Error.OK;
     }
 
-    public String storeNonce(String pMsg) throws Exception {
+    public Error storeNonce(String pMsg) throws Exception {
         String enHash = null;
         String aesNonce = null;
         String oNonce;
         String trHash;
         int posNonce = -1;
+
         for (int i = 0; i < pMsg.length()-1; i++) {
             if (pMsg.charAt(i) == ';') {
                 aesNonce = pMsg.substring(i + 1);
                 enHash = pMsg.substring(0, i);
             }
         }
+
         String deMsg = Decryption.decrypt(key, aesNonce, enHash);
         System.out.println(deMsg);
-        for(int i = 0; i < deMsg.length(); i++){
-            if(deMsg.charAt(i) == ';')posNonce = i;
-            break;
+
+        for (int i = 0; i < deMsg.length(); i++){
+            if(deMsg.charAt(i) == ';') {
+                posNonce = i;
+                break;
+            }
         }
         //for testing purposes because justin is kinda dumb
         // a few weeks later, I have no clue what the hell this was about, but I know it's still not fixed
-        oNonce = deMsg;
-//        oNonce = deMsg.substring(0, posNonce);
-//        System.out.println("oNonce: " + oNonce);
-//        trHash = deMsg.substring(posNonce+1);
-//        if(oriHash.equals(trHash)){
-        if(true){
-            try{
+        //oNonce = deMsg;
+        oNonce = deMsg.substring(0, posNonce);
+        System.out.println("oNonce: " + oNonce);
+        trHash = deMsg.substring(posNonce+1);
+
+        if(oriHash.equals(trHash)) {
+            try {
                 Printer.printToFile(oNonce, Main.getNonceStore().getName(), false);
                 Printer.printToDebugFile(dateF.format(new Date()) + ": A new Nonce was set!", logfileName, true, debug);
-            }
-            catch (Exception e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            return Error.PASSWORD_MISMATCH;
         }
-        else return "05";
-        return null;
+
+        return Error.OK;
     }
 
-    public String changePW(String pMsg) throws Exception {
-        if(oriHash == null) return "07";
+    public Error changePW(String pMsg) throws Exception {
+        if(oriHash == null) {
+            return Error.PASSWORD_NO_RESET;
+        }
+
         String oldHash = oriHash;
         String nonce = null;
         String enHashes = null;
@@ -103,6 +121,7 @@ public class Handler {
                 enHashes = pMsg.substring(0, i);
             }
         }
+
         String deHashes = Decryption.decrypt(key, nonce, enHashes);
         for (int i = 0; i < deHashes.length(); i++) {
             if (deHashes.charAt(i) == ';') {
@@ -110,17 +129,27 @@ public class Handler {
                 trHash = deHashes.substring(0, i);
             }
         }
-        if(trHash.equals(oriHash)) {
+
+        if(oriHash.equals(trHash)) {
             oriHash = neHash;
-            Printer.printToFile(key + "\n" + neHash, Main.getKeyPasStore().getName(), false);
-            Printer.printToFile(dateF.format(new Date()) + ": Password hash was changed to: " + neHash, logfileName, true);
+            try {
+                Printer.printToFile(key + "\n" + neHash, Main.getKeyPasStore().getName(), false);
+                Printer.printToFile(dateF.format(new Date()) + ": Password hash was changed to: " + neHash, logfileName, true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            return Error.PASSWORD_MISMATCH;
         }
-        else return "05";
-        if(oldHash.equals(oriHash)) return "06";
-        return null;
+
+        if(oldHash.equals(oriHash)) {
+            return Error.PASSWORD_NOT_SAVED;
+        }
+
+        return Error.OK;
     }
 
-    public String setOTP(String pMsg) throws Exception {
+    public Error setOTP(String pMsg) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, IOException {
         int listLength = otps.size();
         int posOtp = -1;
         String nonce = null;
@@ -128,12 +157,14 @@ public class Handler {
         String deMsg;
         String neOtp;
         String trHash;
+
         for (int i = 0; i < pMsg.length(); i++) {
             if (pMsg.charAt(i) == ';') {
                 nonce = pMsg.substring(i + 1);
                 enMsg = pMsg.substring(0, i);
             }
         }
+
         deMsg = Decryption.decrypt(key, nonce, enMsg);
         for (int i = 0; i < deMsg.length(); i++) {
             if (deMsg.charAt(i) == ';') {
@@ -141,6 +172,7 @@ public class Handler {
                 break;
             }
         }
+
         neOtp = deMsg.substring(posOtp+1);
         trHash = deMsg.substring(0, posOtp);
         if(oriHash.equals(trHash)) {
@@ -156,13 +188,18 @@ public class Handler {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else {
+            return Error.PASSWORD_MISMATCH;
         }
-        else return "05";
-        if(listLength == otps.size()) return "08";
-        return null;
+
+        if(listLength == otps.size()) {
+            return Error.OPT_NOT_SAVED;
+        }
+
+        return Error.OK;
     }
 
-    public String einmalOeffnung(String pMsg) throws InterruptedException, IOException {
+    public Error einmalOeffnung(String pMsg) throws InterruptedException, IOException {
         String openTime = null;
         String trOtp = null;
         for (int i = 0; i < pMsg.length(); i++) {
@@ -172,7 +209,7 @@ public class Handler {
             }
         }
 
-        if(otps.size()>0){
+        if(!otps.isEmpty()){
             boolean isValid = false;
             int position = -1;
             for (int i = 0; i < otps.size(); i++) {
@@ -195,9 +232,9 @@ public class Handler {
 //                        Printer.printToFile(otp, "otpStore.txt", true);
 //                        System.out.println(otp);
 //                    }
-                    for(int i = 0; i < otps.size(); i++) {
-                        System.out.println(otps.get(i));
-                        Printer.printToFile(otps.get(i), Main.getOtpStore().getName(), true);
+                    for (String otp : otps) {
+                        System.out.println(otp);
+                        Printer.printToFile(otp, Main.getOtpStore().getName(), true);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -205,29 +242,31 @@ public class Handler {
             } else {
                 System.out.println("Client used a wrong OTP");
                 Printer.printToFile(dateF.format(new Date()) + ": A wrong OTP has been used", logfileName, true);
-                return "04";
+                return Error.OTP_NOT_FOUND;
             }
 
-        }
-        else{
+        } else {
             System.out.println("There are currently no OTPs stored");
             Printer.printToFile(dateF.format(new Date()) + ": There were no OTPs, but it was tried anyway", logfileName, true);
-            return "04";
+            return Error.OTP_NOT_FOUND;
         }
-        return null;
+
+        return Error.OK;
     }
 
-    public String open(String pMsg) throws Exception {
+    public Error open(String pMsg) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InterruptedException, IOException {
         int posHash = -1;
         String nonce = null;
         String enMsg = null;
         String deMsg;
+
         for (int i = 0; i < pMsg.length(); i++) {
             if ( pMsg.charAt(i) == ';') {
                 nonce = pMsg.substring(i + 1);
                 enMsg = pMsg.substring(0, i);
             }
         }
+
         deMsg = Decryption.decrypt(key, nonce, enMsg);
         for (int i = 0; i < deMsg.length(); i++) {
             if (deMsg.charAt(i) == ';') {
@@ -235,6 +274,7 @@ public class Handler {
                 break;
             }
         }
+
         if (oriHash.equals(deMsg.substring(0, posHash))) {
             System.out.println("Door is being opened...");
             GpioController.activate(Integer.parseInt(deMsg.substring(posHash + 1)));
@@ -243,13 +283,14 @@ public class Handler {
             System.out.println("a wrong password was used");
             System.out.println(oriHash + " " + deMsg.substring(0, posHash));
             Printer.printToFile(dateF.format(new Date()) + ": client used a wrong password", logfileName, true);
-            return "05";
+            return Error.PASSWORD_MISMATCH;
             //toClient.println("Wrong password"); I think this is useless cause the app doesn't receive anything
         }
-        return null;
+
+        return Error.OK;
     }
 
-    public String godeOpener(String pMsg){
+    public Error godeOpener(String pMsg){
         int posSem = 0;
         for(int i = 0; i<pMsg.length(); i++){
             if(pMsg.charAt(i) == ';'){
@@ -262,32 +303,34 @@ public class Handler {
                 System.out.println("Door is being opened...");
                 GpioController.activate(3000);
                 Printer.printToFile(dateF.format(new Date()) + ": Door is being opened", logfileName, true);
-            }
-            catch(Exception e){
-                return "09";
+            } catch (IOException | InterruptedException e) {
+                return Error.SERVER_ERROR;
             }
         }
         else {
             System.out.println(pMsg.substring(posSem+1));
             try{
                 einmalOeffnung(pMsg.substring(posSem+1) + ";3000");
-            } catch (Exception e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        return null;
+
+        return Error.OK;
     }
 
-    public String reset(String pMsg) throws Exception {
+    public void reset(String pMsg) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, IOException {
         String nonce = null;
         String enMsg = null;
         String deMsg;
+
         for (int i = 0; i < pMsg.length(); i++) {
             if (pMsg.charAt(i) == ';') {
                 nonce = pMsg.substring(i + 1);
                 enMsg = pMsg.substring(0, i);
             }
         }
+
         deMsg = Decryption.decrypt(key, nonce, enMsg);
         if (oriHash.equals(deMsg)) {
             System.out.println("Pi is getting reset...\n");
@@ -300,7 +343,5 @@ public class Handler {
             System.out.println("a wrong password was used");
             Printer.printToFile(dateF.format(new Date()) + ": client used a wrong password", logfileName, true);
         }
-        return null;
     }
-
 }

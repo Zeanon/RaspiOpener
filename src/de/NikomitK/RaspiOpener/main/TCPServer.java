@@ -1,6 +1,7 @@
 package de.NikomitK.RaspiOpener.main;
 
 import de.NikomitK.RaspiOpener.handler.BashIn;
+import de.NikomitK.RaspiOpener.handler.Error;
 import de.NikomitK.RaspiOpener.handler.Handler;
 import de.NikomitK.RaspiOpener.handler.Printer;
 
@@ -105,14 +106,14 @@ class TCPServer {
         // first startup
         boolean fsu = true;
 
-        ServerSocket Server = new ServerSocket(5000);
+        ServerSocket server = new ServerSocket(5000);
 
         System.out.println("TCP-Server waiting for client on port 5000 ");
         Printer.printToFile(dateF.format(new Date()) + ": Server starts", logfileName, true);
-        while (true) {
 
+        while (true) {
             try{
-                Socket connected = Server.accept();
+                Socket connected = server.accept();
                 connected.setSoTimeout(3000);
                 System.out.println("Client at " + " " + connected.getInetAddress() + ":" + connected.getPort() + " connected ");
 
@@ -157,7 +158,7 @@ class TCPServer {
                     break;
                 }
 
-                String worked = null;
+                Error worked = Error.OK;
                 try {
                     switch (fromclient.charAt(0)) {
                         case 'n': //storeNonce in progress
@@ -206,7 +207,7 @@ class TCPServer {
                             break;
                         case 'r': //reset
                             // Command syntax: "r:(<hash>);<nonce>"
-                            worked = handler.reset(param);
+                            handler.reset(param);
                             key = handler.key;
                             oriHash = handler.oriHash;
                             break;
