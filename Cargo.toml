@@ -1,5 +1,5 @@
 [package]
-name = "RaspiOpener"
+name = "raspi_opener"
 version = "0.1.0"
 authors = ["Kreck-Projekt/RaspiOpener"]
 edition = "2018"
