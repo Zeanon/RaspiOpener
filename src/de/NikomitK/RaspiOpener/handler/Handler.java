@@ -20,24 +20,20 @@ public class Handler {
     public String key;
     public String oriHash;
     public List<String> otps;
-    public String logfileName;
-    public boolean debug;
     private final DateFormat dateF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public Handler(String pKey, String pHash, List<String> pOtps) {
         this.key = pKey;
         this.oriHash = pHash;
         this.otps = pOtps;
-        this.logfileName = Main.getLogFile().getName();
-        this.debug = Main.isDebug();
     }
 
     public Error storeKey(String pMsg) throws IOException {
         key = pMsg;
         Printer.printToFile(key, Main.getKeyPasStore().getName(), false);
-        Printer.printToFile(dateF.format(new Date()) + ": Key set to: " + key, logfileName, true);
+        Main.logger.log("Key set to: " + key);
         if (key == null) {
-            Printer.printToFile(dateF.format(new Date()) + ": Error #01 while setting key " + key, logfileName, true);
+            Main.logger.warn("Error #01 while setting key: null");
             return Error.KEY_UNSAVED;
         }
         return Error.OK;
@@ -57,7 +53,7 @@ public class Handler {
         }
         oriHash = Decryption.decrypt(key, nonce, enHash);
         Printer.printToFile(oriHash, Main.getKeyPasStore().getName(), true);
-        Printer.printToFile(dateF.format(new Date()) + ": The password hash was set to: " + oriHash, logfileName, true);
+        Main.logger.log("The password hash was set to: " + oriHash);
         return Error.OK;
     }
 
@@ -94,7 +90,7 @@ public class Handler {
         if (oriHash.equals(trHash)) {
             try {
                 Printer.printToFile(oNonce, Main.getNonceStore().getName(), false);
-                Printer.printToDebugFile(dateF.format(new Date()) + ": A new Nonce was set!", logfileName, true, debug);
+                Main.logger.debug("A new Nonce was set!");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -134,7 +130,7 @@ public class Handler {
             oriHash = neHash;
             try {
                 Printer.printToFile(key + "\n" + neHash, Main.getKeyPasStore().getName(), false);
-                Printer.printToFile(dateF.format(new Date()) + ": Password hash was changed to: " + neHash, logfileName, true);
+                Main.logger.log("Password hash was changed to: " + neHash);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -179,12 +175,12 @@ public class Handler {
             try {
                 Printer.printToFile(neOtp, Main.getOtpStore().getName(), true);
                 otps.add(neOtp);
-                Printer.printToFile(dateF.format(new Date()) + ": A new OTP was set", logfileName, true);
+                Main.logger.log("A new OTP was set");
             } catch (FileNotFoundException fnfe) {
                 Bash.createFile(Main.getOtpStore());
                 Printer.printToFile(neOtp, Main.getOtpStore().getName(), true);
                 otps.add(neOtp);
-                Printer.printToFile(dateF.format(new Date()) + ": A new OTP was set", logfileName, true);
+                Main.logger.log("A new OTP was set");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -221,7 +217,7 @@ public class Handler {
             if (isValid) {
                 System.out.println("Door is being opened with OTP...");
                 GpioUtils.activate(Integer.parseInt(openTime));
-                Printer.printToFile(dateF.format(new Date()) + ": Door is being opened by OTP", logfileName, true);
+                Main.logger.log("Door is being opened by OTP");
                 System.out.println("OTPSTORE LÄNGE " + otps.size());
                 otps.remove(position);
                 System.out.println("OTPSTORE LÄNGE " + otps.size());
@@ -241,13 +237,13 @@ public class Handler {
                 }
             } else {
                 System.out.println("Client used a wrong OTP");
-                Printer.printToFile(dateF.format(new Date()) + ": A wrong OTP has been used", logfileName, true);
+                Main.logger.log("A wrong OTP has been used");
                 return Error.OTP_NOT_FOUND;
             }
 
         } else {
             System.out.println("There are currently no OTPs stored");
-            Printer.printToFile(dateF.format(new Date()) + ": There were no OTPs, but it was tried anyway", logfileName, true);
+            Main.logger.log("There were no OTPs, but it was tried anyway");
             return Error.OTP_NOT_FOUND;
         }
 
@@ -278,11 +274,11 @@ public class Handler {
         if (oriHash.equals(deMsg.substring(0, posHash))) {
             System.out.println("Door is being opened...");
             GpioUtils.activate(Integer.parseInt(deMsg.substring(posHash + 1)));
-            Printer.printToFile(dateF.format(new Date()) + ": Door is being opened", logfileName, true);
+            Main.logger.log("Door is being opened");
         } else {
             System.out.println("a wrong password was used");
             System.out.println(oriHash + " " + deMsg.substring(0, posHash));
-            Printer.printToFile(dateF.format(new Date()) + ": client used a wrong password", logfileName, true);
+            Main.logger.log("client used a wrong password");
             return Error.PASSWORD_MISMATCH;
             //toClient.println("Wrong password"); I think this is useless cause the app doesn't receive anything
         }
@@ -299,13 +295,10 @@ public class Handler {
         }
 
         if (oriHash.equals(pMsg.substring(0, posSem))) {
-            try {
-                System.out.println("Door is being opened...");
-                GpioUtils.activate(3000);
-                Printer.printToFile(dateF.format(new Date()) + ": Door is being opened", logfileName, true);
-            } catch (IOException e) {
-                return Error.SERVER_ERROR;
-            }
+            System.out.println("Door is being opened...");
+            Main.logger.log("Door is being opened");
+            GpioUtils.activate(3000);
+            Main.logger.log("Door was being opened");
         } else {
             System.out.println(pMsg.substring(posSem + 1));
             try {
@@ -333,14 +326,17 @@ public class Handler {
         deMsg = Decryption.decrypt(key, nonce, enMsg);
         if (oriHash.equals(deMsg)) {
             System.out.println("Pi is getting reset...\n");
-            Printer.printToFile("\n\n\n" + dateF.format(new Date()) + ": The Pi was reset", logfileName, true);
+            Main.logger.log("");
+            Main.logger.log("");
+            Main.logger.log("");
+            Main.logger.log("The Pi was reset");
             key = "";
             oriHash = "";
             Bash.clearFile(Main.getKeyPasStore());
             Bash.clearFile(Main.getOtpStore());
         } else {
             System.out.println("a wrong password was used");
-            Printer.printToFile(dateF.format(new Date()) + ": client used a wrong password", logfileName, true);
+            Main.logger.log("client used a wrong password");
         }
     }
 }

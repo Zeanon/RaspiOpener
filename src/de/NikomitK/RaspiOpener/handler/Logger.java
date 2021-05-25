@@ -15,7 +15,10 @@ public class Logger {
     private final BufferedOutputStream outputStream;
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-    public Logger(File file) throws FileNotFoundException {
+    public Logger(File file) throws IOException {
+        if (!file.exists()) {
+            file.createNewFile();
+        }
         outputStream = new BufferedOutputStream(new FileOutputStream(file, true));
     }
 
@@ -34,6 +37,14 @@ public class Logger {
 
         try {
             internalLog(dateFormat.format(new Date()) + " [DEBUG] " + message + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void warn(String message) {
+        try {
+            internalLog(dateFormat.format(new Date()) + " [WARN ] " + message + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }

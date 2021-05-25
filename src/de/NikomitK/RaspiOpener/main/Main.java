@@ -1,21 +1,18 @@
 package de.NikomitK.RaspiOpener.main;
 
 import de.NikomitK.RaspiOpener.handler.Bash;
-import de.NikomitK.RaspiOpener.handler.Printer;
+import de.NikomitK.RaspiOpener.handler.Logger;
 import lombok.Getter;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Main {
     private static final DateFormat dateF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-    @Getter
-    private static File logFile;
+    public static Logger logger;
+
     @Getter
     private static File debugLog;
     @Getter
@@ -31,11 +28,12 @@ public class Main {
     private static TCPServer server;
 
     public static void main(String[] args) throws Exception {
-        logFile = new File("log.txt");
         debugLog = new File("debugLog.txt");
         keyPasStore = new File("keyPasStore.txt");
         otpStore = new File("otpStore.txt");
         nonceStore = new File("nonceStore.txt");
+
+        logger = new Logger(new File("log.txt"));
 
         for (String s : args) {
             switch (s) {
@@ -70,12 +68,10 @@ public class Main {
             server = new TCPServer();
             server.startServer();
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
             System.out.println("Closing...?");
             //de.NikomitK.RaspiOpener.handler.Printer.printToFile(dateF.format(new Date()) + ": server crashed?" + sw.toString(), new PrintWriter(new BufferedWriter(new FileWriter("log.txt", true))));
-            Printer.printToFile(dateF.format(new Date()) + ": server crashed? " + sw, "log.txt", true);
+            logger.warn("Server crashed?");
+            logger.warn(e);
         }
 
     }
