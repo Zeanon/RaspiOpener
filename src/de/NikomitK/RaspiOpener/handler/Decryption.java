@@ -1,9 +1,11 @@
 package de.NikomitK.RaspiOpener.handler;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.*;
 import lombok.experimental.UtilityClass;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -17,7 +19,7 @@ public class Decryption {
 
     private final Charset UTF_8 = StandardCharsets.UTF_8;
 
-    public String decrypt(String key, String nonce, String msg) throws Exception {
+    public String decrypt(String key, String nonce, String msg) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         byte[] encodedKey = DatatypeConverter.parseHexBinary(key);
         byte[] byteNonce = DatatypeConverter.parseHexBinary(nonce);
         byte[] encryptedText = DatatypeConverter.parseHexBinary(msg);

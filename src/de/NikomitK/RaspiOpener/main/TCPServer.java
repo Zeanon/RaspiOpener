@@ -1,6 +1,7 @@
 package de.NikomitK.RaspiOpener.main;
 
 import de.NikomitK.RaspiOpener.handler.Bash;
+import de.NikomitK.RaspiOpener.handler.Error;
 import de.NikomitK.RaspiOpener.handler.Handler;
 import de.NikomitK.RaspiOpener.handler.Printer;
 
@@ -157,7 +158,7 @@ class TCPServer {
                     break;
                 }
 
-                String worked = null;
+                Error worked = Error.OK;
                 try {
                     switch (fromclient.charAt(0)) {
                         case 'n': //storeNonce in progress
@@ -206,7 +207,7 @@ class TCPServer {
                             break;
                         case 'r': //reset
                             // Command syntax: "r:(<hash>);<nonce>"
-                            worked = handler.reset(param);
+                            handler.reset(param);
                             key = handler.key;
                             oriHash = handler.oriHash;
                             break;
@@ -227,7 +228,7 @@ class TCPServer {
                 }
                 catch(AEADBadTagException bte){
                     bte.printStackTrace();
-                    worked = "03";
+                    worked = Error.KEY_MISMATCH;
                 }
                 catch (Exception exc){
                     exc.printStackTrace();
@@ -246,8 +247,5 @@ class TCPServer {
             }
 
             }
-
         }
-
-
 }
