@@ -295,10 +295,8 @@ public class Handler {
             Printer.printToFile("\n\n\n" + dateF.format(new Date()) + ": The Pi was reset", logfileName, true);
             key = "";
             oriHash = "";
-            BashIn.exec("sudo rm keyPasStore.txt");
-            BashIn.exec("sudo touch keyPasStore.txt");
-            BashIn.exec("sudo rm otpStore.txt");
-            BashIn.exec("sudo touch otpStore.txt");
+            BashIn.exec("sudo truncate -s 0 keyPasStore.txt");
+            BashIn.exec("sudo truncate -s 0 otpStore.txt");
         } else {
             System.out.println("a wrong password was used");
             Printer.printToFile(dateF.format(new Date()) + ": client used a wrong password", logfileName, true);
