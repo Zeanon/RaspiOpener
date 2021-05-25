@@ -16,7 +16,7 @@ public class Printer {
     }
 
     public static void printToDebugFile(String text, String fileName, boolean append, boolean debug) throws IOException {
-        if(debug){
+        if (debug) {
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(fileName, append)));
             pw.println(text);
             pw.flush();
