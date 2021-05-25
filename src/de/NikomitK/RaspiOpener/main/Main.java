@@ -1,6 +1,6 @@
 package de.NikomitK.RaspiOpener.main;
 
-import de.NikomitK.RaspiOpener.handler.BashIn;
+import de.NikomitK.RaspiOpener.handler.Bash;
 import de.NikomitK.RaspiOpener.handler.Printer;
 import lombok.Getter;
 
@@ -53,13 +53,13 @@ public class Main {
         }
 
         if (!keyPasStore.exists()) {
-            BashIn.createFile(keyPasStore);
+            Bash.createFile(keyPasStore);
         }
         if (!otpStore.exists()) {
-            BashIn.createFile(otpStore);
+            Bash.createFile(otpStore);
         }
         if (!nonceStore.exists()) {
-            BashIn.createFile(nonceStore);
+            Bash.createFile(nonceStore);
         }
 
         try {

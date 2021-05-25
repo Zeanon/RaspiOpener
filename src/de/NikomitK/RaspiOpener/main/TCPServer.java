@@ -1,6 +1,6 @@
 package de.NikomitK.RaspiOpener.main;
 
-import de.NikomitK.RaspiOpener.handler.BashIn;
+import de.NikomitK.RaspiOpener.handler.Bash;
 import de.NikomitK.RaspiOpener.handler.Handler;
 import de.NikomitK.RaspiOpener.handler.Printer;
 
@@ -65,7 +65,7 @@ class TCPServer {
             kpsc = new Scanner(keyPasStore);
         }
         catch (Exception e){
-            BashIn.exec("sudo touch keyPasStore.txt");
+            Bash.exec("sudo touch keyPasStore.txt");
             keyPasStore = new File("keyPasStore.txt");
             keyPasStore.createNewFile();
             kpsc = new Scanner(keyPasStore);
@@ -74,7 +74,7 @@ class TCPServer {
             otpscan = new Scanner(otpStore);
         }
         catch (Exception e){
-            BashIn.exec("sudo touch otpStore.txt");
+            Bash.exec("sudo touch otpStore.txt");
             otpscan = new Scanner(otpStore);
         }
         try{
