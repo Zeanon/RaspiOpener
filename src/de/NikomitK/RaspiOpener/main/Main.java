@@ -27,6 +27,8 @@ public class Main {
 
     @Getter
     private static boolean debug = false;
+    @Getter
+    private static TCPServer server;
 
     public static void main(String[] args) throws Exception {
         logFile = new File("log.txt");
@@ -65,7 +67,8 @@ public class Main {
         try {
             System.out.println("Starting...");
             // TCP Server starten...
-            TCPServer.run(logFile.getName(), debug);
+            server = new TCPServer();
+            server.startServer();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
