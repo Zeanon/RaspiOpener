@@ -2,7 +2,6 @@ package de.NikomitK.RaspiOpener.main;
 
 import de.NikomitK.RaspiOpener.handler.Error;
 import de.NikomitK.RaspiOpener.handler.Handler;
-import de.NikomitK.RaspiOpener.handler.Printer;
 
 import javax.crypto.AEADBadTagException;
 import java.io.*;
@@ -13,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class TCPServer {
@@ -39,7 +37,7 @@ public class TCPServer {
             handler = new Handler(key, oriHash, otps);
         } catch (IOException e) {
             e.printStackTrace();
-            // TODO: 25.05.2021 Log Exception
+            Main.logger.warn(e);
             System.exit(1);
         }
     }
@@ -49,12 +47,12 @@ public class TCPServer {
             ss = new ServerSocket(5000);
         } catch (IOException e) {
             e.printStackTrace();
-            // TODO: 25.05.2021 Log Exception
+            Main.logger.warn(e);
             System.exit(1);
             return;
         }
-        System.out.println("TCP-Server waiting for client on port 5000 ");
-        // TODO: 25.05.2021 Log
+        System.out.println("TCP-Server waiting for client on port 5000");
+        Main.logger.log("TCP-Server waiting for client on port 5000");
         socketHandler = new Thread(() -> {
             while (!ss.isClosed()) {
                 try {
@@ -65,7 +63,7 @@ public class TCPServer {
                     handleClient(connected);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    // TODO: 25.05.2021 Log Exception
+                    Main.logger.warn(e);
                     try {
                         ss.close();
                     } catch (IOException ioException) {
@@ -104,16 +102,16 @@ public class TCPServer {
 
             processError = true;
             Error error = processFromClient(clientCommand, toClient);
-            if(error != Error.OK) {
+            if (error != Error.OK) {
                 toClient.println(error.getErrorCode() + "EOS");
             }
             connected.close();
         } catch (Exception e) {
             e.printStackTrace();
-            // TODO: 25.05.2021 Log Exception
+            Main.logger.warn(e);
             try {
-                if(!connected.isClosed()) {
-                    if(processError) {
+                if (!connected.isClosed()) {
+                    if (processError) {
                         connected.getOutputStream().write((Error.SERVER_ERROR.getErrorCode() + "EOS").getBytes(StandardCharsets.UTF_8));
                     } else {
                         connected.getOutputStream().write("Invalid connection\n".getBytes(StandardCharsets.UTF_8));
@@ -147,7 +145,7 @@ public class TCPServer {
 
                 case 'p': //storePW done
                     // Command syntax: "p:(<hash>);<nonce>"
-                    if(((oriHash == null || oriHash.equals("")) && secured))
+                    if (((oriHash == null || oriHash.equals("")) && secured))
                         worked = handler.storePW(param);
                     oriHash = handler.oriHash;
                     break;
@@ -191,7 +189,7 @@ public class TCPServer {
                 default:
                     return Error.COMMAND_WRONG;
             }
-        } catch(AEADBadTagException bte){
+        } catch (AEADBadTagException bte) {
             bte.printStackTrace();
             worked = Error.KEY_MISMATCH;
         } catch (Exception exc) {
