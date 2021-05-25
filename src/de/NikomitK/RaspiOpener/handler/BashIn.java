@@ -10,7 +10,7 @@ public class BashIn {
     }
 
     public static void clearFile(String file) throws IOException {
-        exec("sudo echo -n \"\" > " + file);
+        exec("sudo truncate -s 0 " + file + "'");
     }
 
 }
