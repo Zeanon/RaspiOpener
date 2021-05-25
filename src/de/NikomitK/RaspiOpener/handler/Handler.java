@@ -303,7 +303,7 @@ public class Handler {
                 System.out.println("Door is being opened...");
                 GpioUtils.activate(3000);
                 Printer.printToFile(dateF.format(new Date()) + ": Door is being opened", logfileName, true);
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 return Error.SERVER_ERROR;
             }
         }
