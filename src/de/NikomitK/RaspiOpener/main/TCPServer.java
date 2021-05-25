@@ -67,6 +67,7 @@ public class TCPServer {
                     try {
                         ss.close();
                     } catch (IOException ioException) {
+                        Main.logger.warn(ioException);
                         // If the Code gets here: WTF!?!?!?
                     }
                 }

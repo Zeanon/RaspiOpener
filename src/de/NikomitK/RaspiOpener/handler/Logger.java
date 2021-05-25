@@ -37,6 +37,9 @@ public class Logger {
 
         try {
             internalLog(dateFormat.format(new Date()) + " [DEBUG] " + message + "\n");
+            for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+                internalLog("\t" + stackTraceElement.toString() + "\n");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
