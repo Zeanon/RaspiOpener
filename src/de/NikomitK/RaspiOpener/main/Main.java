@@ -58,13 +58,13 @@ public class Main {
         }
 
         if(!keyPasStore.exists()) {
-            BashIn.createFile(keyPasStore.getName());
+            BashIn.createFile(keyPasStore);
         }
         if(!otpStore.exists()) {
-            BashIn.createFile(otpStore.getName());
+            BashIn.createFile(otpStore);
         }
         if(!nonceStore.exists()) {
-            BashIn.createFile(nonceStore.getName());
+            BashIn.createFile(nonceStore);
         }
         //new File("keyPasStore.txt").createNewFile();
         //new File("otpStore.txt").createNewFile();

@@ -2,13 +2,12 @@ package de.NikomitK.RaspiOpener.handler;
 
 import de.NikomitK.RaspiOpener.main.Main;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class Handler {
     public String key;
@@ -28,7 +27,7 @@ public class Handler {
 
     public String storeKey(String pMsg) throws IOException {
         key = pMsg;
-        Printer.printToFile(key, "keyPasStore.txt", false);
+        Printer.printToFile(key, Main.getKeyPasStore().getName(), false);
         Printer.printToFile(dateF.format(new Date()) + ": Key set to: " + key, logfileName, true);
         if(key == null) {
             Printer.printToFile(dateF.format(new Date()) + ": Error #01 while setting key " + key, logfileName, true);
@@ -48,7 +47,7 @@ public class Handler {
             }
         }
         oriHash = Decryption.decrypt(key, nonce, enHash);
-        Printer.printToFile(oriHash, "keyPasStore.txt", true);
+        Printer.printToFile(oriHash, Main.getKeyPasStore().getName(), true);
         Printer.printToFile(dateF.format(new Date()) + ": The password hash was set to: " + oriHash, logfileName, true);
         return null;
     }
@@ -80,8 +79,7 @@ public class Handler {
 //        if(oriHash.equals(trHash)){
         if(true){
             try{
-                new File("nonceStore.txt");
-                Printer.printToFile(oNonce, "nonceStore.txt", false);
+                Printer.printToFile(oNonce, Main.getNonceStore().getName(), false);
                 Printer.printToDebugFile(dateF.format(new Date()) + ": A new Nonce was set!", logfileName, true, debug);
             }
             catch (Exception e){
@@ -114,7 +112,7 @@ public class Handler {
         }
         if(trHash.equals(oriHash)) {
             oriHash = neHash;
-            Printer.printToFile(key + "\n" + neHash, "keyPasStore.txt", false);
+            Printer.printToFile(key + "\n" + neHash, Main.getKeyPasStore().getName(), false);
             Printer.printToFile(dateF.format(new Date()) + ": Password hash was changed to: " + neHash, logfileName, true);
         }
         else return "05";
@@ -147,12 +145,12 @@ public class Handler {
         trHash = deMsg.substring(0, posOtp);
         if(oriHash.equals(trHash)) {
             try {
-                Printer.printToFile(neOtp, "otpStore.txt", true);
+                Printer.printToFile(neOtp, Main.getOtpStore().getName(), true);
                 otps.add(neOtp);
                 Printer.printToFile(dateF.format(new Date()) + ": A new OTP was set", logfileName, true);
             } catch (FileNotFoundException fnfe) {
                 BashIn.exec("sudo touch otpStore.txt");
-                Printer.printToFile(neOtp, "otpStore.txt", true);
+                Printer.printToFile(neOtp, Main.getOtpStore().getName(), true);
                 otps.add(neOtp);
                 Printer.printToFile(dateF.format(new Date()) + ": A new OTP was set", logfileName, true);
             } catch (Exception e) {
@@ -191,7 +189,7 @@ public class Handler {
                 otps.remove(position);
                 System.out.println("OTPSTORE LÄNGE " + otps.size());
                 try {
-                    BashIn.clearFile("otpStore.txt");
+                    BashIn.clearFile(Main.getOtpStore());
 //                    somehow doesn't print otps into file, try with normal for loop
 //                    for (String otp : otps) {
 //                        Printer.printToFile(otp, "otpStore.txt", true);
@@ -199,7 +197,7 @@ public class Handler {
 //                    }
                     for(int i = 0; i < otps.size(); i++) {
                         System.out.println(otps.get(i));
-                        Printer.printToFile(otps.get(i), "otpStore.txt", true);
+                        Printer.printToFile(otps.get(i), Main.getOtpStore().getName(), true);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -296,8 +294,8 @@ public class Handler {
             Printer.printToFile("\n\n\n" + dateF.format(new Date()) + ": The Pi was reset", logfileName, true);
             key = "";
             oriHash = "";
-            BashIn.clearFile("keyPasStore.txt");
-            BashIn.clearFile("otpStore.txt");
+            BashIn.clearFile(Main.getKeyPasStore());
+            BashIn.clearFile(Main.getOtpStore());
         } else {
             System.out.println("a wrong password was used");
             Printer.printToFile(dateF.format(new Date()) + ": client used a wrong password", logfileName, true);
