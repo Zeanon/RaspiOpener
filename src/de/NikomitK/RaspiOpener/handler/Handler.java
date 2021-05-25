@@ -181,7 +181,7 @@ public class Handler {
                 otps.add(neOtp);
                 Printer.printToFile(dateF.format(new Date()) + ": A new OTP was set", logfileName, true);
             } catch (FileNotFoundException fnfe) {
-                BashIn.createFile(Main.getOtpStore());
+                Bash.createFile(Main.getOtpStore());
                 Printer.printToFile(neOtp, Main.getOtpStore().getName(), true);
                 otps.add(neOtp);
                 Printer.printToFile(dateF.format(new Date()) + ": A new OTP was set", logfileName, true);
@@ -226,7 +226,7 @@ public class Handler {
                 otps.remove(position);
                 System.out.println("OTPSTORE LÄNGE " + otps.size());
                 try {
-                    BashIn.clearFile(Main.getOtpStore());
+                    Bash.clearFile(Main.getOtpStore());
 //                    somehow doesn't print otps into file, try with normal for loop
 //                    for (String otp : otps) {
 //                        Printer.printToFile(otp, "otpStore.txt", true);
@@ -337,8 +337,8 @@ public class Handler {
             Printer.printToFile("\n\n\n" + dateF.format(new Date()) + ": The Pi was reset", logfileName, true);
             key = "";
             oriHash = "";
-            BashIn.clearFile(Main.getKeyPasStore());
-            BashIn.clearFile(Main.getOtpStore());
+            Bash.clearFile(Main.getKeyPasStore());
+            Bash.clearFile(Main.getOtpStore());
         } else {
             System.out.println("a wrong password was used");
             Printer.printToFile(dateF.format(new Date()) + ": client used a wrong password", logfileName, true);

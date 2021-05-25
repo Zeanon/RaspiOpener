@@ -1,7 +1,6 @@
 package de.NikomitK.RaspiOpener.main;
 
-import de.NikomitK.RaspiOpener.handler.BashIn;
-import de.NikomitK.RaspiOpener.handler.Error;
+import de.NikomitK.RaspiOpener.handler.Bash;
 import de.NikomitK.RaspiOpener.handler.Handler;
 import de.NikomitK.RaspiOpener.handler.Printer;
 
@@ -66,7 +65,7 @@ class TCPServer {
             kpsc = new Scanner(keyPasStore);
         }
         catch (Exception e){
-            BashIn.exec("sudo touch keyPasStore.txt");
+            Bash.exec("sudo touch keyPasStore.txt");
             keyPasStore = new File("keyPasStore.txt");
             keyPasStore.createNewFile();
             kpsc = new Scanner(keyPasStore);
@@ -75,7 +74,7 @@ class TCPServer {
             otpscan = new Scanner(otpStore);
         }
         catch (Exception e){
-            BashIn.exec("sudo touch otpStore.txt");
+            Bash.exec("sudo touch otpStore.txt");
             otpscan = new Scanner(otpStore);
         }
         try{
@@ -97,7 +96,7 @@ class TCPServer {
             }
 
         }
-        Handler handler = new Handler(key, oriHash, otps, logfileName, debug);
+        Handler handler = new Handler(key, oriHash, otps);
         handler.key = key;
         handler.oriHash = oriHash;
 
@@ -106,14 +105,14 @@ class TCPServer {
         // first startup
         boolean fsu = true;
 
-        ServerSocket server = new ServerSocket(5000);
+        ServerSocket Server = new ServerSocket(5000);
 
         System.out.println("TCP-Server waiting for client on port 5000 ");
         Printer.printToFile(dateF.format(new Date()) + ": Server starts", logfileName, true);
-
         while (true) {
+
             try{
-                Socket connected = server.accept();
+                Socket connected = Server.accept();
                 connected.setSoTimeout(3000);
                 System.out.println("Client at " + " " + connected.getInetAddress() + ":" + connected.getPort() + " connected ");
 
@@ -158,7 +157,7 @@ class TCPServer {
                     break;
                 }
 
-                Error worked = Error.OK;
+                String worked = null;
                 try {
                     switch (fromclient.charAt(0)) {
                         case 'n': //storeNonce in progress
@@ -207,7 +206,7 @@ class TCPServer {
                             break;
                         case 'r': //reset
                             // Command syntax: "r:(<hash>);<nonce>"
-                            handler.reset(param);
+                            worked = handler.reset(param);
                             key = handler.key;
                             oriHash = handler.oriHash;
                             break;

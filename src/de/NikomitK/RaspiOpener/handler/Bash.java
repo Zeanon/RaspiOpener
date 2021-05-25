@@ -3,7 +3,7 @@ package de.NikomitK.RaspiOpener.handler;
 import java.io.File;
 import java.io.IOException;
 
-public class BashIn {
+public class Bash {
 
     // shorter command for executing linux shell commands
     public static void exec(String cmd) throws IOException {
