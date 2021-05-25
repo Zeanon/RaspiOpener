@@ -16,8 +16,8 @@ The App to use with it is "DoorOpenerApp"
   ctrl_interface=/var/run/wpa_supplicant
 
   network={
-  ssid="MyTestNetwork"
-  psk="Password"
+    ssid="MyTestNetwork"
+    psk="Password"
   }
   ```
 - install all required packages:
