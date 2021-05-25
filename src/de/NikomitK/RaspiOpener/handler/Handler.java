@@ -1,5 +1,7 @@
 package de.NikomitK.RaspiOpener.handler;
 
+import de.NikomitK.RaspiOpener.main.Main;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,12 +18,12 @@ public class Handler {
     public boolean debug;
     private final DateFormat dateF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-    public Handler(String pKey, String pHash, List<String> pOtps, String logfileName, boolean debug){
+    public Handler(String pKey, String pHash, List<String> pOtps){
         this.key = pKey;
         this.oriHash = pHash;
         this.otps = pOtps;
-        this.logfileName = logfileName;
-        this.debug = debug;
+        this.logfileName = Main.getLogFile().getName();
+        this.debug = Main.isDebug();
     }
 
     public String storeKey(String pMsg) throws IOException {
