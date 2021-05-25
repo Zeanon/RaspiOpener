@@ -149,7 +149,7 @@ public class Handler {
                 otps.add(neOtp);
                 Printer.printToFile(dateF.format(new Date()) + ": A new OTP was set", logfileName, true);
             } catch (FileNotFoundException fnfe) {
-                BashIn.exec("sudo touch otpStore.txt");
+                BashIn.createFile(Main.getOtpStore());
                 Printer.printToFile(neOtp, Main.getOtpStore().getName(), true);
                 otps.add(neOtp);
                 Printer.printToFile(dateF.format(new Date()) + ": A new OTP was set", logfileName, true);
