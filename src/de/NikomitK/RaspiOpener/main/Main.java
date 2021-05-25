@@ -1,6 +1,7 @@
 package de.NikomitK.RaspiOpener.main;
 
 import de.NikomitK.RaspiOpener.handler.Printer;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -15,11 +16,21 @@ public class Main {
     private static final PrintWriter pw = new PrintWriter(sw);
     private static final DateFormat dateF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-    public static File logFile;
-    public static File debugLog;
-    public static File keyPasStore;
-    public static File otpStore;
-    public static File nonceStore;
+    @Getter
+    private static File logFile;
+    @Getter
+    private static File debugLog;
+    @Getter
+    private static File keyPasStore;
+    @Getter
+    private static File otpStore;
+    @Getter
+    private static File nonceStore;
+
+    @Getter
+    private static TCPServer server;
+    @Getter
+    private static boolean debug = false;
 
     public static void main(String[] args) throws Exception {
         logFile = new File("log.txt");
@@ -27,7 +38,6 @@ public class Main {
         keyPasStore = new File("keyPasStore.txt");
         otpStore = new File("otpStore.txt");
         nonceStore = new File("nonceStore.txt");
-        boolean debug = false;
         if(args.length>0 && args[0].equals("-r")){
             if(keyPasStore.exists()) {
                 keyPasStore.delete();
