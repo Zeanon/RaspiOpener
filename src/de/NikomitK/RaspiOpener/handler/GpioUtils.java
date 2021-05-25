@@ -21,4 +21,3 @@ public class GpioUtils {
         pin.low();
     }
 }
-
