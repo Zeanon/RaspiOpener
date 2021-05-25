@@ -99,7 +99,7 @@ public class TCPServer {
             }
 
             if (clientCommand.charAt(0) != 'H') {
-                Printer.printToFile(dateF.format(new Date()) + ": Client at: " + connected.getInetAddress() + " sent " + clientCommand.charAt(0) + " command", Main.getLogFile().getName(), true);
+                Main.logger.log("Client at: " + connected.getInetAddress() + " sent " + clientCommand.charAt(0) + " command");
             }
 
             processError = true;
