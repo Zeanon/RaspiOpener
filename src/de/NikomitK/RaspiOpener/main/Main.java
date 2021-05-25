@@ -38,13 +38,22 @@ public class Main {
         keyPasStore = new File("keyPasStore.txt");
         otpStore = new File("otpStore.txt");
         nonceStore = new File("nonceStore.txt");
-        if(args.length>0 && args[0].equals("-r")){
-            if(keyPasStore.exists()) {
-                keyPasStore.delete();
+
+        for (String s : args) {
+            switch (s) {
+                case "-r":
+                case "--reset":
+                    if (keyPasStore.exists()) {
+                        keyPasStore.delete();
+                    }
+                    break;
+                case "-d":
+                case "--debug":
+                    debug = true;
+                    break;
+                default:
+                    System.out.println("Unknown arg: " + s);
             }
-        }
-        else if(args.length>0 && args[0].equals("-debug")) {
-            debug = true;
         }
 //        gets removed in the next update, just here in case the replacement doesn't work reliably
         if(!keyPasStore.exists()) {
