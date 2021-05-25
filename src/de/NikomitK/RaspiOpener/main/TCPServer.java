@@ -96,7 +96,7 @@ class TCPServer {
             }
 
         }
-        Handler handler = new Handler(key, oriHash, otps, logfileName, debug);
+        Handler handler = new Handler(key, oriHash, otps);
         handler.key = key;
         handler.oriHash = oriHash;
 

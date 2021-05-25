@@ -12,9 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Main {
-
-    private static final StringWriter sw = new StringWriter();
-    private static final PrintWriter pw = new PrintWriter(sw);
     private static final DateFormat dateF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     @Getter
@@ -28,8 +25,6 @@ public class Main {
     @Getter
     private static File nonceStore;
 
-    @Getter
-    private static TCPServer server;
     @Getter
     private static boolean debug = false;
 
@@ -57,24 +52,23 @@ public class Main {
             }
         }
 
-        if(!keyPasStore.exists()) {
+        if (!keyPasStore.exists()) {
             BashIn.createFile(keyPasStore);
         }
-        if(!otpStore.exists()) {
+        if (!otpStore.exists()) {
             BashIn.createFile(otpStore);
         }
-        if(!nonceStore.exists()) {
+        if (!nonceStore.exists()) {
             BashIn.createFile(nonceStore);
         }
-        //new File("keyPasStore.txt").createNewFile();
-        //new File("otpStore.txt").createNewFile();
-        //new File("nonceStore.txt").createNewFile();
-        try{
+
+        try {
             System.out.println("Starting...");
             // TCP Server starten...
             TCPServer.run(logFile.getName(), debug);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
             System.out.println("Closing...?");
             //de.NikomitK.RaspiOpener.handler.Printer.printToFile(dateF.format(new Date()) + ": server crashed?" + sw.toString(), new PrintWriter(new BufferedWriter(new FileWriter("log.txt", true))));
