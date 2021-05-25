@@ -9,4 +9,8 @@ public class BashIn {
         Runtime.getRuntime().exec(cmd);
     }
 
+    public static void clearFile(String file) throws IOException {
+        exec("sudo echo -n \"\" > " + file);
+    }
+
 }
