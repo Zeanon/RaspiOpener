@@ -2,6 +2,9 @@ package de.NikomitK.RaspiOpener.handler;
 
 import de.NikomitK.RaspiOpener.main.Main;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -11,9 +14,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 
 public class Handler {
@@ -24,7 +24,7 @@ public class Handler {
     public boolean debug;
     private final DateFormat dateF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-    public Handler(String pKey, String pHash, List<String> pOtps){
+    public Handler(String pKey, String pHash, List<String> pOtps) {
         this.key = pKey;
         this.oriHash = pHash;
         this.otps = pOtps;
@@ -36,7 +36,7 @@ public class Handler {
         key = pMsg;
         Printer.printToFile(key, Main.getKeyPasStore().getName(), false);
         Printer.printToFile(dateF.format(new Date()) + ": Key set to: " + key, logfileName, true);
-        if(key == null) {
+        if (key == null) {
             Printer.printToFile(dateF.format(new Date()) + ": Error #01 while setting key " + key, logfileName, true);
             return Error.KEY_UNSAVED;
         }
@@ -44,7 +44,7 @@ public class Handler {
     }
 
     public Error storePW(String pMsg) throws Exception {
-        if(!oriHash.equals("")) {
+        if (!oriHash.equals("")) {
             return Error.PASSWORD_EXISTS;
         }
         String enHash = null;
@@ -68,7 +68,7 @@ public class Handler {
         String trHash;
         int posNonce = -1;
 
-        for (int i = 0; i < pMsg.length()-1; i++) {
+        for (int i = 0; i < pMsg.length() - 1; i++) {
             if (pMsg.charAt(i) == ';') {
                 aesNonce = pMsg.substring(i + 1);
                 enHash = pMsg.substring(0, i);
@@ -78,8 +78,8 @@ public class Handler {
         String deMsg = Decryption.decrypt(key, aesNonce, enHash);
         System.out.println(deMsg);
 
-        for (int i = 0; i < deMsg.length(); i++){
-            if(deMsg.charAt(i) == ';') {
+        for (int i = 0; i < deMsg.length(); i++) {
+            if (deMsg.charAt(i) == ';') {
                 posNonce = i;
                 break;
             }
@@ -89,9 +89,9 @@ public class Handler {
         //oNonce = deMsg;
         oNonce = deMsg.substring(0, posNonce);
         System.out.println("oNonce: " + oNonce);
-        trHash = deMsg.substring(posNonce+1);
+        trHash = deMsg.substring(posNonce + 1);
 
-        if(oriHash.equals(trHash)) {
+        if (oriHash.equals(trHash)) {
             try {
                 Printer.printToFile(oNonce, Main.getNonceStore().getName(), false);
                 Printer.printToDebugFile(dateF.format(new Date()) + ": A new Nonce was set!", logfileName, true, debug);
@@ -106,7 +106,7 @@ public class Handler {
     }
 
     public Error changePW(String pMsg) throws Exception {
-        if(oriHash == null) {
+        if (oriHash == null) {
             return Error.PASSWORD_NO_RESET;
         }
 
@@ -130,7 +130,7 @@ public class Handler {
             }
         }
 
-        if(oriHash.equals(trHash)) {
+        if (oriHash.equals(trHash)) {
             oriHash = neHash;
             try {
                 Printer.printToFile(key + "\n" + neHash, Main.getKeyPasStore().getName(), false);
@@ -142,7 +142,7 @@ public class Handler {
             return Error.PASSWORD_MISMATCH;
         }
 
-        if(oldHash.equals(oriHash)) {
+        if (oldHash.equals(oriHash)) {
             return Error.PASSWORD_NOT_SAVED;
         }
 
@@ -173,9 +173,9 @@ public class Handler {
             }
         }
 
-        neOtp = deMsg.substring(posOtp+1);
+        neOtp = deMsg.substring(posOtp + 1);
         trHash = deMsg.substring(0, posOtp);
-        if(oriHash.equals(trHash)) {
+        if (oriHash.equals(trHash)) {
             try {
                 Printer.printToFile(neOtp, Main.getOtpStore().getName(), true);
                 otps.add(neOtp);
@@ -192,7 +192,7 @@ public class Handler {
             return Error.PASSWORD_MISMATCH;
         }
 
-        if(listLength == otps.size()) {
+        if (listLength == otps.size()) {
             return Error.OPT_NOT_SAVED;
         }
 
@@ -209,7 +209,7 @@ public class Handler {
             }
         }
 
-        if(!otps.isEmpty()){
+        if (!otps.isEmpty()) {
             boolean isValid = false;
             int position = -1;
             for (int i = 0; i < otps.size(); i++) {
@@ -261,7 +261,7 @@ public class Handler {
         String deMsg;
 
         for (int i = 0; i < pMsg.length(); i++) {
-            if ( pMsg.charAt(i) == ';') {
+            if (pMsg.charAt(i) == ';') {
                 nonce = pMsg.substring(i + 1);
                 enMsg = pMsg.substring(0, i);
             }
@@ -290,27 +290,26 @@ public class Handler {
         return Error.OK;
     }
 
-    public Error godeOpener(String pMsg){
+    public Error godeOpener(String pMsg) {
         int posSem = 0;
-        for(int i = 0; i<pMsg.length(); i++){
-            if(pMsg.charAt(i) == ';'){
+        for (int i = 0; i < pMsg.length(); i++) {
+            if (pMsg.charAt(i) == ';') {
                 posSem = i;
             }
         }
 
-        if(oriHash.equals(pMsg.substring(0, posSem))){
-            try{
+        if (oriHash.equals(pMsg.substring(0, posSem))) {
+            try {
                 System.out.println("Door is being opened...");
                 GpioUtils.activate(3000);
                 Printer.printToFile(dateF.format(new Date()) + ": Door is being opened", logfileName, true);
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 return Error.SERVER_ERROR;
             }
-        }
-        else {
-            System.out.println(pMsg.substring(posSem+1));
-            try{
-                einmalOeffnung(pMsg.substring(posSem+1) + ";3000");
+        } else {
+            System.out.println(pMsg.substring(posSem + 1));
+            try {
+                einmalOeffnung(pMsg.substring(posSem + 1) + ";3000");
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
