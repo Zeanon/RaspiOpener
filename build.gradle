@@ -1,9 +1,19 @@
 plugins {
     id 'java'
+    id 'application'
+
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
 }
 
 group 'CodeOpener'
 version ''
+
+compileJava.options.encoding = 'UTF-8'
+
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
+
+mainClassName = 'de.NikomitK.RaspiOpener.main.Main'
 
 repositories {
     mavenCentral()
@@ -18,17 +28,16 @@ sourceSets {
     }
 }
 
-apply plugin: 'java'
 dependencies {
-    compile 'junit:junit:4.12'
-    compile 'com.pi4j:pi4j-core:1.4'
-    compile 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'junit:junit:4.12'
+    implementation 'com.pi4j:pi4j-core:1.4'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
 }
-jar {
+
+shadowJar {
     manifest {
         attributes(
-                'Class-Path': configurations.compile.collect {it.getName() }.join(' '),
-                'Main-Class': 'de.NikomitK.RaspiOpener.main.Main')
+                'Main-Class': mainClassName
+        )
     }
-    from configurations.compile.collect { entry -> zipTree(entry) }
 }
