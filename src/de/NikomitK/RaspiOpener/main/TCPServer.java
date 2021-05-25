@@ -34,9 +34,7 @@ public class TCPServer {
         try (BufferedReader keyPasReader = new BufferedReader(Channels.newReader((new RandomAccessFile(Main.getKeyPasStore(), "r")).getChannel(), StandardCharsets.UTF_8)); BufferedReader otpReader = new BufferedReader(Channels.newReader((new RandomAccessFile(Main.getOtpStore(), "r")).getChannel(), StandardCharsets.UTF_8))) {
             key = keyPasReader.readLine();
             oriHash = keyPasReader.readLine();
-            while (otpReader.ready()) {
-                otps.add(otpReader.readLine());
-            }
+            otpReader.lines().forEach(s -> otps.add(s));
 
             handler = new Handler(key, oriHash, otps);
         } catch (IOException e) {
