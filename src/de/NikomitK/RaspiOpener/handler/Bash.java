@@ -15,7 +15,7 @@ public class Bash {
     }
 
     public static void clearFile(File file) throws IOException {
-        exec("sudo truncate -s 0 " + file.getName());
+        exec("sudo echo \"\" > " + file.getName());
     }
 
 }
