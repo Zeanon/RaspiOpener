@@ -5,8 +5,16 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '5.0.0'
 }
 
-group 'CodeOpener'
+group 'RaspiOpener'
 version ''
+
+ext {
+    uberJarName = "${group}-all.jar"
+    jarName = "${group}.jar"
+    libs = "${buildDir}/libs"
+
+    groupName = "${group}"
+}
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -19,7 +27,6 @@ repositories {
     mavenCentral()
 }
 
-
 sourceSets {
     main {
         java {
@@ -29,12 +36,13 @@ sourceSets {
 }
 
 dependencies {
+    testCompile 'junit:junit:4.12'
+
     compileOnly 'org.projectlombok:lombok:1.18.6'
     testCompileOnly 'org.projectlombok:lombok:1.18.6'
     annotationProcessor 'org.projectlombok:lombok:1.18.6'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.6'
 
-    implementation 'junit:junit:4.12'
     implementation 'com.pi4j:pi4j-core:1.4'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
 }
@@ -46,3 +54,19 @@ shadowJar {
         )
     }
 }
+
+task buildProject {
+    description 'Build this repo'
+    group "Build"
+
+    doLast {
+        if ("${buildDir}" == null) {
+            return
+        }
+        delete fileTree("${libs}").matching {
+            exclude("${uberJarName}")
+        }
+        file(libs + "/" + uberJarName).renameTo(file(libs + "/" + jarName))
+    }
+}
+build.finalizedBy(buildProject)
