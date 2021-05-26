@@ -106,6 +106,7 @@ public class Main {
         while (inputStream.available() > 0) {
             fileOutputStream.write(inputStream.read());
         }
+        fileOutputStream.close();
         logger.debug(file.length() + " bytes loaded");
 
         if (exec) {
