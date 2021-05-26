@@ -71,7 +71,7 @@ public class Logger {
 
     private void internalPrint(Set<Throwable> dejaVu, StackTraceElement[] stackTrace, Throwable[] suppressed, Throwable cause) throws IOException {
         for (StackTraceElement stackTraceElement : stackTrace) {
-            internalLog("\tat " + stackTraceElement);
+            internalLog("\tat " + stackTraceElement + "\n");
         }
 
         for (Throwable throwable : suppressed) {
@@ -96,5 +96,6 @@ public class Logger {
 
     private void internalLog(String message) throws IOException {
         outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+        outputStream.flush();
     }
 }
