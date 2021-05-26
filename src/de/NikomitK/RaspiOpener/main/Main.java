@@ -10,6 +10,8 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Main {
 
@@ -30,7 +32,21 @@ public class Main {
     private static TCPServer server;
 
     public static void main(String[] args) throws Exception {
+        Set<String> specifiedArguments = new HashSet<>();
+        for (String s : args) {
+            if (s.startsWith("-") && !s.startsWith("--") && s.length() > 2) {
+                char[] chars = s.substring(1).toCharArray();
+                for (char c : chars) {
+                    specifiedArguments.add("- "+ c);
+                }
+            } else {
+                specifiedArguments.add(s);
+            }
+        }
+
         logger = new Logger(new File("log.txt"));
+        debug = specifiedArguments.contains("-d") || specifiedArguments.contains("--debug");
+        strackTrace = specifiedArguments.contains("-s") || specifiedArguments.contains("--stacktrace");
 
         loadFileFromJar("dependencies.sh", true);
         loadFileFromJar("bluetooth.sh", false);
@@ -44,15 +60,8 @@ public class Main {
         }
         logger.log("Loaded Storage");
 
-        for (String s : args) {
-            if (s.startsWith("-") && !s.startsWith("--") && s.length() > 2) {
-                char[] chars = s.substring(1).toCharArray();
-                for (char c : chars) {
-                    arg("-" + c);
-                }
-            } else {
-                arg(s);
-            }
+        if (specifiedArguments.contains("-r") || specifiedArguments.contains("--reset")) {
+            resetStorage();
         }
         storage.save();
 
@@ -70,26 +79,6 @@ public class Main {
         }
     }
 
-    private static void arg(String s) {
-        switch (s) {
-            case "-r":
-            case "--reset":
-                resetStorage();
-                break;
-            case "-d":
-            case "--debug":
-                debug = true;
-                break;
-            case "-s":
-            case "--stacktrace":
-            case "--stackTrace":
-                strackTrace = true;
-                break;
-            default:
-                System.out.println("Unknown arg: " + s);
-        }
-    }
-
     public static void resetStorage() {
         logger.debug("Resetting Storage");
         storage = new Storage();
@@ -102,15 +91,15 @@ public class Main {
             byte[] bytes1 = md5(Main.class.getResourceAsStream("/" + fileName));
             byte[] bytes2 = md5(new FileInputStream(file));
             if (Arrays.equals(bytes1, bytes2)) {
-                logger.log("File already exists");
+                logger.debug("File already exists");
                 return;
             }
-            logger.log("Update File as it has changed or has been changed");
+            logger.debug("Update File as it has changed or has been changed");
         }
         InputStream inputStream = Main.class.getResourceAsStream("/" + fileName);
         if (inputStream == null) {
-            logger.warn("File in Jar not found");
-            System.exit(1);
+            logger.debug("File in Jar not found");
+            return;
         }
         inputStream.transferTo(new FileOutputStream(file));
         logger.debug(file.length() + " bytes loaded");
