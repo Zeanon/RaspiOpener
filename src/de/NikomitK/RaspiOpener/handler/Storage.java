@@ -29,7 +29,7 @@ public class Storage {
     //   hash()
     //   nonce()
     //   otps{
-    //     @type(java.util.ArrayList)
+    //     @type(java.util.HashSet)
     //     values[...]
     //   }
     // }
