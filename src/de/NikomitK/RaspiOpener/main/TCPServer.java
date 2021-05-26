@@ -104,7 +104,7 @@ public class TCPServer {
                 return;
             }
 
-            if (clientCommand.charAt(1) != ':' && clientCommand.equals("null")) {
+            if (clientCommand.charAt(1) != ':' || clientCommand.equals("null")) {
                 Main.logger.debug("Command was Invalid");
                 toClient.println("Invalid connection\n");
                 connected.close();
