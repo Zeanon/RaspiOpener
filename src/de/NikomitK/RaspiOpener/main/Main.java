@@ -5,12 +5,8 @@ import de.NikomitK.RaspiOpener.handler.Logger;
 import lombok.Getter;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 public class Main {
-    private static final DateFormat dateF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
     public static Logger logger;
 
     @Getter
