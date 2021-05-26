@@ -118,6 +118,9 @@ public class Main {
     }
 
     private static byte[] md5(InputStream inputStream) throws IOException, NoSuchAlgorithmException {
+        if (inputStream == null) {
+            return null;
+        }
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
         while (inputStream.available() > 0) {
             int i = inputStream.read();
