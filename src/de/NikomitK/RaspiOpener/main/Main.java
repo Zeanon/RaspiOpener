@@ -21,6 +21,9 @@ public class Main {
     private static boolean debug = false;
 
     @Getter
+    private static boolean strackTrace = false;
+
+    @Getter
     private static TCPServer server;
 
     public static void main(String[] args) throws Exception {
@@ -40,6 +43,11 @@ public class Main {
                 case "-d":
                 case "--debug":
                     debug = true;
+                    break;
+                case "-s":
+                case "--stacktrace":
+                case "--stackTrace":
+                    strackTrace = true;
                     break;
                 default:
                     System.out.println("Unknown arg: " + s);

@@ -30,10 +30,12 @@ public class TCPServer {
 
     public TCPServer() {
         try (BufferedReader keyPasReader = new BufferedReader(Channels.newReader((new RandomAccessFile(Main.getKeyPasStore(), "r")).getChannel(), StandardCharsets.UTF_8)); BufferedReader otpReader = new BufferedReader(Channels.newReader((new RandomAccessFile(Main.getOtpStore(), "r")).getChannel(), StandardCharsets.UTF_8))) {
+            Main.logger.debug("Reading: " + Main.getKeyPasStore().getAbsolutePath());
             key = keyPasReader.readLine();
             oriHash = keyPasReader.readLine();
             otpReader.lines().forEach(s -> otps.add(s));
 
+            Main.logger.debug("Creating new Handler");
             handler = new Handler(key, oriHash, otps);
         } catch (IOException e) {
             e.printStackTrace();
