@@ -25,6 +25,7 @@ public class Logger {
     public void log(String message) {
         try {
             internalLog(dateFormat.format(new Date()) + " [LOG  ] " + message + "\n");
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,12 +38,14 @@ public class Logger {
 
         try {
             internalLog(dateFormat.format(new Date()) + " [DEBUG] " + message + "\n");
+            outputStream.flush();
             if (!Main.isStrackTrace()) {
                 return;
             }
             for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
                 internalLog("\t" + stackTraceElement.toString() + "\n");
             }
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,6 +54,7 @@ public class Logger {
     public void warn(String message) {
         try {
             internalLog(dateFormat.format(new Date()) + " [WARN ] " + message + "\n");
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,6 +68,7 @@ public class Logger {
             dejaVu.add(exception);
 
             internalPrint(dejaVu, exception.getStackTrace(), exception.getSuppressed(), exception.getCause());
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,6 +101,5 @@ public class Logger {
 
     private void internalLog(String message) throws IOException {
         outputStream.write(message.getBytes(StandardCharsets.UTF_8));
-        outputStream.flush();
     }
 }
