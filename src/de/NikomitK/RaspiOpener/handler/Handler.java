@@ -23,7 +23,7 @@ public class Handler {
     }
 
     public Error storePW(String parameter) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        if (!Main.storage.getHash().equals("")) {
+        if (Main.storage.getHash() != null && !Main.storage.getHash().equals("")) {
             return Error.PASSWORD_EXISTS;
         }
         int index = parameter.indexOf(';');
@@ -37,12 +37,12 @@ public class Handler {
         int index = parameter.indexOf(';');
         String nonce = parameter.substring(index + 1);
 
-        String decryptedHash = Decryption.decrypt(Main.storage.getKey(), nonce, parameter.substring(0, index));
-        Main.logger.debug("DecryptedHash: " + decryptedHash);
+        String decryptedNonce = Decryption.decrypt(Main.storage.getKey(), nonce, parameter.substring(0, index));
+        Main.logger.debug("DecryptedNonce: " + decryptedNonce);
 
-        int posNonce = decryptedHash.indexOf(';');
-        nonce = decryptedHash.substring(0, posNonce);
-        String hash = decryptedHash.substring(posNonce + 1);
+        int posNonce = decryptedNonce.indexOf(';');
+        nonce = decryptedNonce.substring(0, posNonce);
+        String hash = decryptedNonce.substring(posNonce + 1);
         Main.logger.debug("Nonce: " + nonce);
 
         if (!Main.storage.getHash().equals(hash)) {
@@ -139,16 +139,20 @@ public class Handler {
         String hash = decrpytedHash.substring(0, index);
         int time = Integer.parseInt(decrpytedHash.substring(index + 1));
 
+
+        if (Main.storage.getHash() == null) {
+            Main.logger.debug("No password is set");
+            return Error.PASSWORD_NO_RESET;
+        }
         if (!Main.storage.getHash().equals(hash)) {
-            System.out.println("A wrong password was used");
-            System.out.println(Main.storage.getHash() + " " + hash);
             Main.logger.log("Client used a wrong password");
+            Main.logger.debug(Main.storage.getHash() + " " + hash);
             return Error.PASSWORD_MISMATCH;
         }
 
         System.out.println("Door is being opened...");
-        GpioUtils.activate(time);
         Main.logger.log("Door is being opened");
+        GpioUtils.activate(time);
         return Error.OK;
     }
 

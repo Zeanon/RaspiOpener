@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 
 public class TCPServer {
 
-    private final boolean secured = false;
     private Handler handler;
     private ServerSocket ss;
     private boolean fsu = true;
@@ -77,7 +76,7 @@ public class TCPServer {
             System.out.println("Received: " + clientCommand);
             Main.logger.debug("Received: " + clientCommand);
 
-            if (clientCommand.isEmpty()) {
+            if (clientCommand == null || clientCommand.isEmpty()) {
                 Main.logger.debug("Command was Empty");
                 toClient.println("Invalid connection\n");
                 connected.close();
@@ -134,14 +133,14 @@ public class TCPServer {
 
                 case 'k': //storeKey done
                     // Command syntax: "k:<key>"
-                    if ((Main.storage.getKey() == null || Main.storage.getKey().equals("")) && param.length() == 32 && secured) {
+                    if ((Main.storage.getKey() == null || Main.storage.getKey().equals("")) && param.length() == 32) {
                         worked = handler.storeKey(param);
                     }
                     break;
 
                 case 'p': //storePW done
                     // Command syntax: "p:(<hash>);<nonce>"
-                    if ((Main.storage.getHash() == null || Main.storage.getHash().equals("")) && secured) {
+                    if ((Main.storage.getHash() == null || Main.storage.getHash().equals(""))) {
                         worked = handler.storePW(param);
                     }
                     break;
@@ -182,6 +181,7 @@ public class TCPServer {
                     return Error.COMMAND_WRONG;
             }
         } catch (AEADBadTagException bte) {
+            Main.logger.warn(bte);
             bte.printStackTrace();
             worked = Error.KEY_MISMATCH;
         } catch (Exception exc) {

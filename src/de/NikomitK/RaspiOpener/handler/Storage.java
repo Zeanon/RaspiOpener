@@ -36,7 +36,7 @@ public class Storage {
 
     public void save() {
         try {
-            Main.logger.debug("Saving Storage");
+            Main.logger.debug("Saving Storage: " + YAPIONSerializer.serialize(this));
             YAPIONSerializer.serialize(this).toYAPION(new FileOutput(Main.getStorageFile(), true)).close();
         } catch (IOException | YAPIONException e) {
             Main.logger.warn(e);

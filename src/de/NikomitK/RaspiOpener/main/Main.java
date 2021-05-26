@@ -86,6 +86,7 @@ public class Main {
     }
 
     public static void resetStorage() {
+        logger.debug("Resetting Storage");
         storage = new Storage();
         storage.save();
     }
