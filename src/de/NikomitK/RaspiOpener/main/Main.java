@@ -14,8 +14,6 @@ public class Main {
     public static Logger logger;
 
     @Getter
-    private static File debugLog;
-    @Getter
     private static File keyPasStore;
     @Getter
     private static File otpStore;
@@ -28,7 +26,6 @@ public class Main {
     private static TCPServer server;
 
     public static void main(String[] args) throws Exception {
-        debugLog = new File("debugLog.txt");
         keyPasStore = new File("keyPasStore.txt");
         otpStore = new File("otpStore.txt");
         nonceStore = new File("nonceStore.txt");
