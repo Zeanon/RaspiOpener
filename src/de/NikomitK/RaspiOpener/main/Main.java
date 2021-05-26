@@ -102,7 +102,10 @@ public class Main {
             logger.debug("File in Jar not found");
             return;
         }
-        inputStream.transferTo(new FileOutputStream(file));
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        while (inputStream.available() > 0) {
+            fileOutputStream.write(inputStream.read());
+        }
         logger.debug(file.length() + " bytes loaded");
 
         if (exec) {
