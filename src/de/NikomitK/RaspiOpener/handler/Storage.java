@@ -17,4 +17,9 @@ public class Storage {
     private String nonce;
     private List<String> otps = new ArrayList<>();
 
+    public Storage(String key, String hash, String nonce) {
+        this.key = key;
+        this.hash = hash;
+        this.nonce = nonce;
+    }
 }
