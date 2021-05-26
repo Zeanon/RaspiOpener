@@ -46,6 +46,7 @@ public class TCPServer {
 
     public void startServer() {
         try {
+            Main.logger.debug("Starting ServerSocket");
             ss = new ServerSocket(5000);
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,6 +76,7 @@ public class TCPServer {
                 }
             }
         }, "TCP-Server-handler");
+        Main.logger.debug("Starting TCP-Server-handler Thread");
         socketHandler.start();
     }
 
@@ -92,20 +94,20 @@ public class TCPServer {
             String clientCommand = fromClient.readLine();
 
             System.out.println("Received: " + clientCommand);
+            Main.logger.debug("Received: " + clientCommand);
 
             if (clientCommand.charAt(1) != ':' && clientCommand.equals("null")) {
                 toClient.println("Invalid connection\n");
                 connected.close();
                 return;
             }
-
-            if (clientCommand.charAt(0) != 'H') {
-                Main.logger.log("Client at: " + connected.getInetAddress() + " sent " + clientCommand.charAt(0) + " command");
-            }
+            Main.logger.log("Client at: " + connected.getInetAddress() + " sent " + clientCommand.charAt(0) + " command");
 
             processError = true;
             Error error = processFromClient(clientCommand, toClient);
+            Main.logger.debug("Error Code " + error + " " + error.getErrorCode() + " from executing command '" + clientCommand + "'");
             if (error != Error.OK) {
+                Main.logger.debug("Sending Client EOS as of ErrorCode not equal OK");
                 toClient.println(error.getErrorCode() + "EOS");
             }
             connected.close();
