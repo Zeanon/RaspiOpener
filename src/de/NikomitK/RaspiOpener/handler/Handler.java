@@ -12,15 +12,12 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-
 
 public class Handler {
     public String key;
     public String oriHash;
     public List<String> otps;
-    private final DateFormat dateF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public Handler(String pKey, String pHash, List<String> pOtps) {
         this.key = pKey;
