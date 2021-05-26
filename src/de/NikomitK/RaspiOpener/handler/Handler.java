@@ -45,7 +45,7 @@ public class Handler {
         String hash = decryptedNonce.substring(posNonce + 1);
         Main.logger.debug("Nonce: " + nonce);
 
-        if (!Main.storage.getHash().equals(hash)) {
+        if (!hash.equals(Main.storage.getHash())) {
             return Error.PASSWORD_MISMATCH;
         }
 
@@ -70,11 +70,11 @@ public class Handler {
         String newHash = decryptedHash.substring(0, index);
 
         String oldHash = Main.storage.getHash();
-        if (!oldHash.equals(transferredHash)) {
+        if (!transferredHash.equals(oldHash)) {
             return Error.PASSWORD_MISMATCH;
         }
 
-        if (oldHash.equals(newHash)) {
+        if (newHash.equals(oldHash)) {
             Main.logger.log("Password hash was not changed");
             return Error.PASSWORD_NOT_SAVED;
         }
@@ -94,7 +94,7 @@ public class Handler {
         String otp = decryptedOTP.substring(index + 1);
         String transferredHash = decryptedOTP.substring(0, index);
 
-        if (!Main.storage.getHash().equals(transferredHash)) {
+        if (!transferredHash.equals(Main.storage.getHash())) {
             return Error.PASSWORD_MISMATCH;
         }
 
@@ -139,12 +139,7 @@ public class Handler {
         String hash = decrpytedHash.substring(0, index);
         int time = Integer.parseInt(decrpytedHash.substring(index + 1));
 
-
-        if (Main.storage.getHash() == null) {
-            Main.logger.debug("No password is set");
-            return Error.PASSWORD_NO_RESET;
-        }
-        if (!Main.storage.getHash().equals(hash)) {
+        if (!hash.equals(Main.storage.getHash())) {
             Main.logger.log("Client used a wrong password");
             Main.logger.debug(Main.storage.getHash() + " " + hash);
             return Error.PASSWORD_MISMATCH;
@@ -160,7 +155,7 @@ public class Handler {
         int index = parameter.indexOf(';');
         String hash = parameter.substring(0, index);
 
-        if (!Main.storage.getHash().equals(hash)) {
+        if (!hash.equals(Main.storage.getHash())) {
             return einmalOeffnung(hash + ";3000");
         }
         System.out.println("Door is being opened...");
@@ -177,7 +172,7 @@ public class Handler {
         String encryptedHash = parameter.substring(0, index);
 
         String decrpytedHash = Decryption.decrypt(Main.storage.getKey(), nonce, encryptedHash);
-        if (!Main.storage.getHash().equals(decrpytedHash)) {
+        if (!decrpytedHash.equals(Main.storage.getHash())) {
             System.out.println("A wrong password was used");
             Main.logger.log("Client used a wrong password");
             return;
