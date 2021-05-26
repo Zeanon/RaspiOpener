@@ -10,14 +10,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.Channels;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TCPServer {
-
-    private static final DateFormat dateF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     private String key;
     private String oriHash;
