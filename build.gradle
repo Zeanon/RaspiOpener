@@ -25,6 +25,10 @@ mainClassName = 'de.NikomitK.RaspiOpener.main.Main'
 
 repositories {
     mavenCentral()
+
+    maven {
+        url = uri("https://raw.githubusercontent.com/yoyosource/YAPION/master/releases")
+    }
 }
 
 sourceSets {
@@ -44,6 +48,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.6'
 
     implementation 'com.pi4j:pi4j-core:1.4'
+    implementation 'yoyosource:YAPION:0.25.3'
 }
 
 shadowJar {
