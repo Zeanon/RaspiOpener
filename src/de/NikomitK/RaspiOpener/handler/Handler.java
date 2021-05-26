@@ -27,7 +27,7 @@ public class Handler {
             return Error.PASSWORD_EXISTS;
         }
         int index = parameter.indexOf(';');
-        String hash = Decryption.decrypt(Main.storage.getKey(), parameter.substring(0, index), parameter.substring(index + 1));
+        String hash = Decryption.decrypt(Main.storage.getKey(), parameter.substring(index + 1), parameter.substring(0, index));
         Main.storage.setHash(hash);
         Main.logger.log("The password hash was set to: " + hash);
         return Error.OK;
@@ -174,7 +174,7 @@ public class Handler {
     public void reset(String parameter) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, IOException {
         int index = parameter.indexOf(';');
         String nonce = parameter.substring(index + 1);
-        String encryptedHash = parameter.substring(0, index + 1);
+        String encryptedHash = parameter.substring(0, index);
 
         String decrpytedHash = Decryption.decrypt(Main.storage.getKey(), nonce, encryptedHash);
         if (!Main.storage.getHash().equals(decrpytedHash)) {

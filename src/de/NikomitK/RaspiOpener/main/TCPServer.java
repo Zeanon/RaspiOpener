@@ -127,7 +127,7 @@ public class TCPServer {
         try {
             switch (fromclient.charAt(0)) {
                 case 'n': //storeNonce in progress
-                    // Command syntax: "n:(<nonce>;<hash>);nonce
+                    // Command syntax: "n:(<nonce>;<hash>);<nonce>"
                     worked = handler.storeNonce(param);
                     break;
 
