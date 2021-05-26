@@ -11,15 +11,8 @@ import java.util.List;
 @Getter
 @ToString
 public class Storage {
-
-    private String key;
-    private String hash;
-    private String nonce;
+    private String key = "";
+    private String hash = "";
+    private String nonce = "";
     private List<String> otps = new ArrayList<>();
-
-    public Storage(String key, String hash, String nonce) {
-        this.key = key;
-        this.hash = hash;
-        this.nonce = nonce;
-    }
 }

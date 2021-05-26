@@ -2,7 +2,10 @@ package de.NikomitK.RaspiOpener.main;
 
 import de.NikomitK.RaspiOpener.handler.Bash;
 import de.NikomitK.RaspiOpener.handler.Logger;
+import de.NikomitK.RaspiOpener.handler.Storage;
 import lombok.Getter;
+import yapion.parser.YAPIONParser;
+import yapion.serializing.YAPIONDeserializer;
 
 import java.io.File;
 import java.util.Arrays;
@@ -18,6 +21,9 @@ public class Main {
     private static File nonceStore;
 
     @Getter
+    private static Storage storage;
+
+    @Getter
     private static boolean debug = false;
 
     @Getter
@@ -27,6 +33,13 @@ public class Main {
     private static TCPServer server;
 
     public static void main(String[] args) throws Exception {
+        File storageFile = new File("storage.yapion");
+        if (storageFile.exists()) {
+            storage = (Storage) YAPIONDeserializer.deserialize(YAPIONParser.parse(new File("storage.yapion")));
+        } else {
+            storage = new Storage();
+        }
+
         keyPasStore = new File("keyPasStore.txt");
         otpStore = new File("otpStore.txt");
         nonceStore = new File("nonceStore.txt");
