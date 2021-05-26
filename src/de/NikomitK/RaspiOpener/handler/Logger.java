@@ -101,5 +101,6 @@ public class Logger {
 
     private void internalLog(String message) throws IOException {
         outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+        System.out.print(message);
     }
 }

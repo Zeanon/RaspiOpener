@@ -34,7 +34,6 @@ public class TCPServer {
             System.exit(1);
             return;
         }
-        System.out.println("TCP-Server waiting for client on port 5000");
         Main.logger.log("TCP-Server waiting for client on port 5000");
         socketHandler = new Thread(() -> {
             while (!ss.isClosed()) {
@@ -42,7 +41,7 @@ public class TCPServer {
                     Socket connected = ss.accept();
                     connected.setSoTimeout(3000);
 
-                    System.out.println("Client at " + " " + connected.getInetAddress() + ":" + connected.getPort() + " connected ");
+                    Main.logger.debug("Client at " + " " + connected.getInetAddress() + ":" + connected.getPort() + " connected ");
                     handleClient(connected);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -66,14 +65,12 @@ public class TCPServer {
             BufferedReader fromClient = new BufferedReader(new InputStreamReader(connected.getInputStream()));
             PrintWriter toClient = new PrintWriter(connected.getOutputStream(), true);
             if (fsu) {
+                Main.logger.debug("Sending FSU handshake for initial connect");
                 toClient.println("BUT NOT FOR ME");
                 fsu = false;
             }
             toClient.println("Connected");
-            // receive from app
             String clientCommand = fromClient.readLine();
-
-            System.out.println("Received: " + clientCommand);
             Main.logger.debug("Received: " + clientCommand);
 
             if (clientCommand == null || clientCommand.isEmpty()) {
@@ -83,7 +80,7 @@ public class TCPServer {
                 return;
             }
 
-            if (clientCommand.charAt(1) != ':' || clientCommand.equals("null") || clientCommand.charAt(0) == 'H') {
+            if (clientCommand.charAt(1) != ':' || clientCommand.equals("null")) {
                 Main.logger.debug("Command was Invalid");
                 toClient.println("Invalid connection\n");
                 connected.close();
@@ -94,27 +91,29 @@ public class TCPServer {
             processError = true;
             Error error = processFromClient(clientCommand);
             Main.storage.save();
-            Main.logger.debug("Error Code " + error + " " + error.getErrorCode() + " from executing command '" + clientCommand + "'");
+            Main.logger.debug("Error Code " + error + " from executing command '" + clientCommand + "'");
             if (error != Error.OK) {
                 Main.logger.debug("Sending Client EOS as of ErrorCode not equal OK");
                 toClient.println(error.getErrorCode() + "EOS");
             }
+            Main.logger.debug("Closing Client connection");
             connected.close();
         } catch (Exception e) {
-            e.printStackTrace();
             Main.logger.warn(e);
             try {
                 if (!connected.isClosed()) {
                     if (processError) {
+                        Main.logger.debug("Sending ServerError as disconnect did not work");
                         connected.getOutputStream().write((Error.SERVER_ERROR.getErrorCode() + "EOS").getBytes(StandardCharsets.UTF_8));
                     } else {
+                        Main.logger.debug("Sending invalid connection");
                         connected.getOutputStream().write("Invalid connection\n".getBytes(StandardCharsets.UTF_8));
                     }
                     connected.getOutputStream().flush();
+                    Main.logger.debug("Closing connection");
                     connected.close();
                 }
             } catch (IOException ex) {
-                ex.printStackTrace();
                 Main.logger.warn(ex);
             }
         }
@@ -182,7 +181,6 @@ public class TCPServer {
             }
         } catch (AEADBadTagException bte) {
             Main.logger.warn(bte);
-            bte.printStackTrace();
             worked = Error.KEY_MISMATCH;
         } catch (Exception exc) {
             throw new SecurityException("Something went wrong", exc);

@@ -47,6 +47,8 @@ public class Main {
         logger = new Logger(new File("log.txt"));
         debug = specifiedArguments.contains("-d") || specifiedArguments.contains("--debug");
         strackTrace = specifiedArguments.contains("-s") || specifiedArguments.contains("--stacktrace");
+        logger.debug("Debug logging enabled");
+        logger.debug("CLI Args: " + Arrays.toString(args));
 
         loadFileFromJar("dependencies.sh", true);
         loadFileFromJar("bluetooth.sh", false);
@@ -62,18 +64,17 @@ public class Main {
 
         if (specifiedArguments.contains("-r") || specifiedArguments.contains("--reset")) {
             resetStorage();
+        } else {
+            storage.save();
         }
-        storage.save();
-
-        logger.debug("CLI Args: " + Arrays.toString(args));
 
         try {
-            System.out.println("Starting...");
             // TCP Server starten...
+            logger.debug("Creating TCPServer");
             server = new TCPServer();
+            logger.debug("Starting TCPServer");
             server.startServer();
         } catch (Exception e) {
-            System.out.println("Closing...?");
             logger.warn("Server crashed?");
             logger.warn(e);
         }

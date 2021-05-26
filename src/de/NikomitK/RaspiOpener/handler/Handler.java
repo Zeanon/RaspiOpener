@@ -111,21 +111,18 @@ public class Handler {
         String transferredOtp = parameter.substring(0, index);
 
         if (Main.storage.getOtps().isEmpty()) {
-            System.out.println("There are currently no OTPs stored");
             Main.logger.log("There were no OTPs, but it was tried anyway");
             return Error.OTP_NOT_FOUND;
         }
 
         boolean isValid = Main.storage.getOtps().remove(transferredOtp);
         if (!isValid) {
-            System.out.println("Client used a wrong OTP");
             Main.logger.log("A wrong OTP has been used");
             return Error.OTP_NOT_FOUND;
         }
 
-        System.out.println("Door is being opened with OTP...");
-        GpioUtils.activate(Integer.parseInt(openTime));
         Main.logger.log("Door is being opened by OTP");
+        GpioUtils.activate(Integer.parseInt(openTime));
         return Error.OK;
     }
 
@@ -145,7 +142,6 @@ public class Handler {
             return Error.PASSWORD_MISMATCH;
         }
 
-        System.out.println("Door is being opened...");
         Main.logger.log("Door is being opened");
         GpioUtils.activate(time);
         return Error.OK;
@@ -158,7 +154,6 @@ public class Handler {
         if (!hash.equals(Main.storage.getHash())) {
             return einmalOeffnung(hash + ";3000");
         }
-        System.out.println("Door is being opened...");
         Main.logger.log("Door is being opened");
         GpioUtils.activate(3000);
         Main.logger.log("Door was being opened");
@@ -173,12 +168,10 @@ public class Handler {
 
         String decrpytedHash = Decryption.decrypt(Main.storage.getKey(), nonce, encryptedHash);
         if (!decrpytedHash.equals(Main.storage.getHash())) {
-            System.out.println("A wrong password was used");
             Main.logger.log("Client used a wrong password");
             return;
         }
 
-        System.out.println("Pi is getting reset...");
         Main.logger.log("The Pi was reset");
         Main.resetStorage();
     }
