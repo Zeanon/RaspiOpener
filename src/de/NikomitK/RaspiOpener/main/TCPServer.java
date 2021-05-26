@@ -5,6 +5,7 @@ import de.NikomitK.RaspiOpener.handler.Handler;
 
 import javax.crypto.AEADBadTagException;
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.Channels;
@@ -96,7 +97,21 @@ public class TCPServer {
             System.out.println("Received: " + clientCommand);
             Main.logger.debug("Received: " + clientCommand);
 
+            if (clientCommand.isEmpty()) {
+                Main.logger.debug("Command was Empty");
+                toClient.println("Invalid connection\n");
+                connected.close();
+                return;
+            }
+
             if (clientCommand.charAt(1) != ':' && clientCommand.equals("null")) {
+                Main.logger.debug("Command was Invalid");
+                toClient.println("Invalid connection\n");
+                connected.close();
+                return;
+            }
+            if (clientCommand.charAt(0) == 'H' && !connected.getInetAddress().equals(InetAddress.getLocalHost())) {
+                Main.logger.debug("Invalid Command from client");
                 toClient.println("Invalid connection\n");
                 connected.close();
                 return;
@@ -162,7 +177,7 @@ public class TCPServer {
                     break;
 
                 case 's': // setOTP done
-                    // Command syntax "s:(<hash>;<otp>);<nonce>>"
+                    // Command syntax "s:(<hash>;<otp>);<nonce>"
                     worked = handler.setOTP(param);
                     otps = handler.otps;
                     break;
