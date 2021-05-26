@@ -33,24 +33,13 @@ public class Main {
 
         logger = new Logger(new File("log.txt"));
         for (String s : args) {
-            switch (s) {
-                case "-r":
-                case "--reset":
-                    if (keyPasStore.exists()) {
-                        keyPasStore.delete();
-                    }
-                    break;
-                case "-d":
-                case "--debug":
-                    debug = true;
-                    break;
-                case "-s":
-                case "--stacktrace":
-                case "--stackTrace":
-                    strackTrace = true;
-                    break;
-                default:
-                    System.out.println("Unknown arg: " + s);
+            if (s.startsWith("-") && !s.startsWith("--") && s.length() > 2) {
+                char[] chars = s.substring(1).toCharArray();
+                for (char c : chars) {
+                    arg("-" + c);
+                }
+            } else {
+                arg(s);
             }
         }
 
@@ -79,6 +68,27 @@ public class Main {
             logger.warn("Server crashed?");
             logger.warn(e);
         }
+    }
 
+    private static void arg(String s) {
+        switch (s) {
+            case "-r":
+            case "--reset":
+                if (keyPasStore.exists()) {
+                    keyPasStore.delete();
+                }
+                break;
+            case "-d":
+            case "--debug":
+                debug = true;
+                break;
+            case "-s":
+            case "--stacktrace":
+            case "--stackTrace":
+                strackTrace = true;
+                break;
+            default:
+                System.out.println("Unknown arg: " + s);
+        }
     }
 }
