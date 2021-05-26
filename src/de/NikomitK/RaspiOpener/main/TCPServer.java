@@ -126,6 +126,7 @@ public class TCPServer {
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
+                Main.logger.warn(ex);
             }
         }
     }
