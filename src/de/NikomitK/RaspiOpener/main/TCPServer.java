@@ -4,20 +4,15 @@ import de.NikomitK.RaspiOpener.handler.Error;
 import de.NikomitK.RaspiOpener.handler.Handler;
 
 import javax.crypto.AEADBadTagException;
-import java.io.*;
-import java.net.InetAddress;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.channels.Channels;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TCPServer {
-
-    private String key;
-    private String oriHash;
-    private List<String> otps = new ArrayList<>();
 
     private final boolean secured = false;
     private Handler handler;
@@ -26,19 +21,8 @@ public class TCPServer {
     private Thread socketHandler;
 
     public TCPServer() {
-        try (BufferedReader keyPasReader = new BufferedReader(Channels.newReader((new RandomAccessFile(Main.getKeyPasStore(), "r")).getChannel(), StandardCharsets.UTF_8)); BufferedReader otpReader = new BufferedReader(Channels.newReader((new RandomAccessFile(Main.getOtpStore(), "r")).getChannel(), StandardCharsets.UTF_8))) {
-            Main.logger.debug("Reading: " + Main.getKeyPasStore().getAbsolutePath());
-            key = keyPasReader.readLine();
-            oriHash = keyPasReader.readLine();
-            otpReader.lines().forEach(s -> otps.add(s));
-
-            Main.logger.debug("Creating new Handler");
-            handler = new Handler(key, oriHash, otps);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.logger.warn(e);
-            System.exit(1);
-        }
+        Main.logger.debug("Creating new Handler");
+        handler = new Handler();
     }
 
     public void startServer() {
@@ -100,14 +84,8 @@ public class TCPServer {
                 return;
             }
 
-            if (clientCommand.charAt(1) != ':' || clientCommand.equals("null")) {
+            if (clientCommand.charAt(1) != ':' || clientCommand.equals("null") || clientCommand.charAt(0) == 'H') {
                 Main.logger.debug("Command was Invalid");
-                toClient.println("Invalid connection\n");
-                connected.close();
-                return;
-            }
-            if (clientCommand.charAt(0) == 'H' && !connected.getInetAddress().equals(InetAddress.getLocalHost())) {
-                Main.logger.debug("Invalid Command from client");
                 toClient.println("Invalid connection\n");
                 connected.close();
                 return;
@@ -115,7 +93,8 @@ public class TCPServer {
             Main.logger.log("Client at: " + connected.getInetAddress() + " sent " + clientCommand.charAt(0) + " command");
 
             processError = true;
-            Error error = processFromClient(clientCommand, toClient);
+            Error error = processFromClient(clientCommand);
+            Main.storage.save();
             Main.logger.debug("Error Code " + error + " " + error.getErrorCode() + " from executing command '" + clientCommand + "'");
             if (error != Error.OK) {
                 Main.logger.debug("Sending Client EOS as of ErrorCode not equal OK");
@@ -142,7 +121,7 @@ public class TCPServer {
         }
     }
 
-    private Error processFromClient(String fromclient, PrintWriter toClient) {
+    private Error processFromClient(String fromclient) {
         String param = fromclient.substring(2);
 
         Error worked = Error.OK;
@@ -155,16 +134,16 @@ public class TCPServer {
 
                 case 'k': //storeKey done
                     // Command syntax: "k:<key>"
-                    if (((key == null || key.equals("")) && param.length() == 32) && secured)
+                    if ((Main.storage.getKey() == null || Main.storage.getKey().equals("")) && param.length() == 32 && secured) {
                         worked = handler.storeKey(param);
-                    key = handler.key;
+                    }
                     break;
 
                 case 'p': //storePW done
                     // Command syntax: "p:(<hash>);<nonce>"
-                    if (((oriHash == null || oriHash.equals("")) && secured))
+                    if ((Main.storage.getHash() == null || Main.storage.getHash().equals("")) && secured) {
                         worked = handler.storePW(param);
-                    oriHash = handler.oriHash;
+                    }
                     break;
 
                 case 'c': //changePW done
@@ -175,18 +154,20 @@ public class TCPServer {
                 case 's': // setOTP done
                     // Command syntax "s:(<hash>;<otp>);<nonce>"
                     worked = handler.setOTP(param);
-                    otps = handler.otps;
                     break;
 
                 case 'e': // einmalöffnung done
                     // Command syntax: "e:<otp>;<time>"
                     worked = handler.einmalOeffnung(param);
-                    otps = handler.otps;
                     break;
 
                 case 'o': // Open  done
                     // Command syntax: "o:(<hash>;<time>);<nonce>"
-                    worked = handler.open(param);
+                    try {
+                        worked = handler.open(param);
+                    } catch (NumberFormatException e) {
+                        worked = Error.SERVER_ERROR;
+                    }
                     break;
                 case 'g': // godeOpener?
                     // command syntax: "g:<hash>"
@@ -195,12 +176,6 @@ public class TCPServer {
                 case 'r': //reset
                     // Command syntax: "r:(<hash>);<nonce>"
                     handler.reset(param);
-                    key = handler.key;
-                    oriHash = handler.oriHash;
-                    break;
-
-                case 'H': // "how are you", get's called from alivekeeper, never from user
-                    toClient.println("I'm fine, thanks");
                     break;
 
                 default:

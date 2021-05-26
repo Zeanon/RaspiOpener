@@ -24,7 +24,7 @@ public enum Error {
 
     // Anything related with the OneTimePad
     OTP_NOT_FOUND("04"),
-    OPT_NOT_SAVED("08"),
+    OTP_NOT_SAVED("08"),
 
     // Anything else
     SERVER_ERROR("09"),

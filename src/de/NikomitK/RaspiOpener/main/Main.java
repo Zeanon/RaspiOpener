@@ -1,6 +1,5 @@
 package de.NikomitK.RaspiOpener.main;
 
-import de.NikomitK.RaspiOpener.handler.Bash;
 import de.NikomitK.RaspiOpener.handler.Logger;
 import de.NikomitK.RaspiOpener.handler.Storage;
 import lombok.Getter;
@@ -11,17 +10,13 @@ import java.io.File;
 import java.util.Arrays;
 
 public class Main {
+
     public static Logger logger;
 
     @Getter
-    private static File keyPasStore;
-    @Getter
-    private static File otpStore;
-    @Getter
-    private static File nonceStore;
+    private static File storageFile;
 
-    @Getter
-    private static Storage storage;
+    public static Storage storage;
 
     @Getter
     private static boolean debug = false;
@@ -33,18 +28,17 @@ public class Main {
     private static TCPServer server;
 
     public static void main(String[] args) throws Exception {
-        File storageFile = new File("storage.yapion");
+        logger = new Logger(new File("log.txt"));
+
+        logger.log("Loading Storage");
+        storageFile = new File("storage.yapion");
         if (storageFile.exists()) {
             storage = (Storage) YAPIONDeserializer.deserialize(YAPIONParser.parse(new File("storage.yapion")));
         } else {
             storage = new Storage();
         }
+        logger.log("Loaded Storage");
 
-        keyPasStore = new File("keyPasStore.txt");
-        otpStore = new File("otpStore.txt");
-        nonceStore = new File("nonceStore.txt");
-
-        logger = new Logger(new File("log.txt"));
         for (String s : args) {
             if (s.startsWith("-") && !s.startsWith("--") && s.length() > 2) {
                 char[] chars = s.substring(1).toCharArray();
@@ -55,21 +49,9 @@ public class Main {
                 arg(s);
             }
         }
+        storage.save();
 
         logger.debug("CLI Args: " + Arrays.toString(args));
-
-        if (!keyPasStore.exists()) {
-            logger.debug("Creating: " + keyPasStore.getAbsolutePath());
-            Bash.createFile(keyPasStore);
-        }
-        if (!otpStore.exists()) {
-            logger.debug("Creating: " + otpStore.getAbsolutePath());
-            Bash.createFile(otpStore);
-        }
-        if (!nonceStore.exists()) {
-            logger.debug("Creating: " + nonceStore.getAbsolutePath());
-            Bash.createFile(nonceStore);
-        }
 
         try {
             System.out.println("Starting...");
@@ -87,9 +69,7 @@ public class Main {
         switch (s) {
             case "-r":
             case "--reset":
-                if (keyPasStore.exists()) {
-                    keyPasStore.delete();
-                }
+                resetStorage();
                 break;
             case "-d":
             case "--debug":
@@ -103,5 +83,10 @@ public class Main {
             default:
                 System.out.println("Unknown arg: " + s);
         }
+    }
+
+    public static void resetStorage() {
+        storage = new Storage();
+        storage.save();
     }
 }
