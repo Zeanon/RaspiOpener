@@ -89,10 +89,11 @@ public class Main {
     private static void loadFileFromJar(String fileName, boolean exec) throws IOException, NoSuchAlgorithmException {
         File file = new File(fileName);
         if (file.exists()) {
+            logger.debug("File already exists");
             byte[] bytes1 = md5(Main.class.getResourceAsStream("/" + fileName));
             byte[] bytes2 = md5(new FileInputStream(file));
             if (Arrays.equals(bytes1, bytes2)) {
-                logger.debug("File already exists");
+                logger.debug("File is the same");
                 return;
             }
             logger.debug("Update File as it has changed or has been changed");
