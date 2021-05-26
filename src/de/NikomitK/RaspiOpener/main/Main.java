@@ -5,6 +5,7 @@ import de.NikomitK.RaspiOpener.handler.Logger;
 import lombok.Getter;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class Main {
     public static Logger logger;
@@ -18,6 +19,7 @@ public class Main {
 
     @Getter
     private static boolean debug = false;
+
     @Getter
     private static TCPServer server;
 
@@ -27,7 +29,6 @@ public class Main {
         nonceStore = new File("nonceStore.txt");
 
         logger = new Logger(new File("log.txt"));
-
         for (String s : args) {
             switch (s) {
                 case "-r":
@@ -45,13 +46,18 @@ public class Main {
             }
         }
 
+        logger.debug("CLI Args: " + Arrays.toString(args));
+
         if (!keyPasStore.exists()) {
+            logger.debug("Creating: " + keyPasStore.getAbsolutePath());
             Bash.createFile(keyPasStore);
         }
         if (!otpStore.exists()) {
+            logger.debug("Creating: " + otpStore.getAbsolutePath());
             Bash.createFile(otpStore);
         }
         if (!nonceStore.exists()) {
+            logger.debug("Creating: " + nonceStore.getAbsolutePath());
             Bash.createFile(nonceStore);
         }
 
@@ -62,7 +68,6 @@ public class Main {
             server.startServer();
         } catch (Exception e) {
             System.out.println("Closing...?");
-            //de.NikomitK.RaspiOpener.handler.Printer.printToFile(dateF.format(new Date()) + ": server crashed?" + sw.toString(), new PrintWriter(new BufferedWriter(new FileWriter("log.txt", true))));
             logger.warn("Server crashed?");
             logger.warn(e);
         }
