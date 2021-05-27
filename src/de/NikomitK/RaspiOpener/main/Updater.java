@@ -59,7 +59,7 @@ public class Updater {
             }
 
             if (remoteBuild > currentBuild) {
-                return new UpdateResult(UpdateType.UPDATE_AVAILABLE, remoteVersion.getValue("version", "").get() + " Build: " + remoteBuild);
+                return new UpdateResult(UpdateType.UPDATE_AVAILABLE, remoteVersion.getValue("version", "").get());
             }
             return new UpdateResult(UpdateType.NO_UPDATE);
         } catch (IOException e) {
