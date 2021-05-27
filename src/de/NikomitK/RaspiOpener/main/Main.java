@@ -56,7 +56,7 @@ public class Main {
         logger.log("Loading Storage");
         storageFile = new File("storage.yapion");
         if (storageFile.exists()) {
-            storage = (Storage) YAPIONDeserializer.deserialize(YAPIONParser.parse(new File("storage.yapion")));
+            storage = (Storage) YAPIONDeserializer.deserialize(YAPIONParser.parse(storageFile));
         } else {
             storage = new Storage();
         }
