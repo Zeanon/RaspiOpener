@@ -31,7 +31,15 @@ public class Main {
     @Getter
     private static TCPServer server;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
+        try {
+            secondaryMain(args);
+        } catch (Exception e) {
+            System.exit(101);
+        }
+    }
+
+    private static void secondaryMain(String[] args) throws Exception {
         Set<String> specifiedArguments = new HashSet<>();
         for (String s : args) {
             if (s.startsWith("-") && !s.startsWith("--") && s.length() > 2) {
