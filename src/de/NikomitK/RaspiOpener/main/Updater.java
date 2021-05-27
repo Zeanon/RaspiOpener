@@ -25,10 +25,6 @@ public class Updater {
     @Getter
     private YAPIONObject currentVersion = null;
 
-    public static void main(String[] args) {
-        System.out.println(checkForUpdate());
-    }
-
     public enum UpdateType {
         UPDATE_AVAILABLE,
         NO_UPDATE,
@@ -55,6 +51,7 @@ public class Updater {
             Main.logger.debug("Update check with: " + updateURL);
             URL versionCheckUrl = new URL(updateURL);
             YAPIONObject remoteVersion = YAPIONParser.parse(versionCheckUrl.openStream());
+            Main.logger.debug("RemoteVersion: " + remoteVersion);
             int remoteBuild = remoteVersion.getPlainValueOrDefault("build", -1);
             int currentBuild  = currentVersion.getPlainValueOrDefault("build", -1);
 
