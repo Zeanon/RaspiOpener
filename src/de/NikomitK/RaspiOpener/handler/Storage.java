@@ -14,8 +14,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @YAPIONData
-@Setter
 @Getter
+@Setter
 @ToString
 public class Storage {
     private String key = null;
