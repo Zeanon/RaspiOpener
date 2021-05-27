@@ -2,7 +2,7 @@
 
 # Needs to be detached in a screen like 'screen -dm ./updater.sh'
 
-sleep 10
+sleep 1
 
 # 1. Download git repo
 git clone $1
@@ -20,7 +20,7 @@ mv RaspiOpener.jar RaspiOpener-old.jar
 mv RaspiOpener/build/libs/RaspiOpener.jar .
 
 # 5. Remove git dir
-rm -r RaspiOpener
+rm -rf RaspiOpener
 
 # 6. Start jar
 java -jar RaspiOpener.jar $2
