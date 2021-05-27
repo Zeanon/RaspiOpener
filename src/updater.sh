@@ -15,5 +15,4 @@ sleep 10
 # 9. Copy old jar to current
 # 10. Start old jar
 
-
 $?
