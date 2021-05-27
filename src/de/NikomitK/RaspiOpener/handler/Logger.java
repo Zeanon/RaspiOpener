@@ -41,8 +41,8 @@ public class Logger {
 
         try {
             internalLog(dateFormat.format(new Date()) + " [DEBUG] " + message + "\n");
-            outputStream.flush();
             if (!Main.isStrackTrace()) {
+                outputStream.flush();
                 return;
             }
             for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
