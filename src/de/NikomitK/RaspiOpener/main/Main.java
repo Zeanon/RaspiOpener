@@ -98,9 +98,6 @@ public class Main {
         Updater.UpdateResult updateResult = Updater.checkForUpdate();
         if (updateResult.getUpdateType() == Updater.UpdateType.UPDATE_AVAILABLE) {
             logger.log("New update found! " + updateResult.getUpdateVersion());
-            Updater.update();
-            System.exit(0);
-            return;
         }
 
         try {
