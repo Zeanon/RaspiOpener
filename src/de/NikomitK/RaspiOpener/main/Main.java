@@ -38,6 +38,7 @@ public class Main {
         try {
             secondaryMain(args);
         } catch (Exception e) {
+            logger.warn(e);
             System.exit(101);
         }
     }
