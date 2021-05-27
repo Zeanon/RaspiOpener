@@ -15,6 +15,9 @@ import java.util.Set;
 
 public class Main {
 
+    @Getter
+    private static String arguments;
+
     public static Logger logger;
 
     @Getter
@@ -40,6 +43,7 @@ public class Main {
     }
 
     private static void secondaryMain(String[] args) throws Exception {
+        arguments = String.join(" ", args);
         Set<String> specifiedArguments = new HashSet<>();
         for (String s : args) {
             if (s.startsWith("-") && !s.startsWith("--") && s.length() > 2) {
@@ -94,6 +98,9 @@ public class Main {
         Updater.UpdateResult updateResult = Updater.checkForUpdate();
         if (updateResult.getUpdateType() == Updater.UpdateType.UPDATE_AVAILABLE) {
             logger.log("New update found! " + updateResult.getUpdateVersion());
+            Updater.update();
+            System.exit(0);
+            return;
         }
 
         try {

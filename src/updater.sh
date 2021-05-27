@@ -5,14 +5,35 @@
 sleep 10
 
 # 1. Download git repo
-# 2. Build via gradle
-# 3. Move current jar to somewhere else
-# 4. Move builded jar to current location
-# 5. Remove git dir
-# 6. Start jar
-# 7. Check on error code, when 101 do the following
-# 8. Remove current jar
-# 9. Copy old jar to current
-# 10. Start old jar
+git clone $1
 
-$?
+# 2. Build via gradle
+cd RaspiOpener
+chmod u+x gradlew
+./gradlew build
+
+# 3. Move current jar to somewhere else
+cd ..
+mv RaspiOpener.jar RaspiOpener-old.jar
+
+# 4. Move builded jar to current location
+mv RaspiOpener/build/libs/RaspiOpener.jar .
+
+# 5. Remove git dir
+rm -r RaspiOpener
+
+# 6. Start jar
+java -jar RaspiOpener.jar $2
+
+# 7. Check on error code, when 101 do the following
+if [ $? -eq 101 ]
+then
+    # 8. Remove current jar
+    rm RaspiOpener.jar
+
+    # 9. Copy old jar to current
+    cp RaspiOpener-old.jar RaspiOpener.jar
+
+    # 10. Start old jar
+    java -jar RaspiOpener.jar
+fi
