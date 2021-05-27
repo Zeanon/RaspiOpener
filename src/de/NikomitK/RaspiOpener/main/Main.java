@@ -53,7 +53,11 @@ public class Main {
         }
 
         if (specifiedArguments.contains("-h") || specifiedArguments.contains("--help")) {
-            System.out.println("HELP");
+            System.out.println("Help\n");
+            System.out.println("-h or --help for this message");
+            System.out.println("-d or --debug for debug logs");
+            System.out.println("-s or --stacktrace for debug with stacktraces");
+            System.out.println("-r or --reset for reseting it beforehand");
             return;
         }
 
@@ -64,6 +68,7 @@ public class Main {
         logger.debug("CLI Args: " + Arrays.toString(args));
 
         loadFileFromJar("dependencies.sh", true);
+        loadFileFromJar("updater.sh", false);
         loadFileFromJar("bluetooth.sh", false);
 
         logger.log("Loading Storage");
