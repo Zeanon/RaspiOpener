@@ -2,10 +2,10 @@ package de.NikomitK.RaspiOpener.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 public enum Error {
 
