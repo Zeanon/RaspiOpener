@@ -73,7 +73,8 @@ public class Updater {
             Main.logger.debug("Update: NO_UPDATE");
             return new UpdateResult(UpdateType.NO_UPDATE);
         } catch (IOException e) {
-            Main.logger.debug("Update: UPDATE_CHECK_FAILED");
+            Main.logger.warn("Update: UPDATE_CHECK_FAILED");
+            Main.logger.warn(e);
             return new UpdateResult(UpdateType.UPDATE_CHECK_FAILED);
         }
     }
