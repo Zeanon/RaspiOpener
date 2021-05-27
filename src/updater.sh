@@ -35,5 +35,5 @@ then
     cp RaspiOpener-old.jar RaspiOpener.jar
 
     # 10. Start old jar
-    java -jar RaspiOpener.jar
+    java -jar RaspiOpener.jar $2
 fi

@@ -149,8 +149,8 @@ public class Main {
         file.setExecutable(true);
 
         if (exec) {
-            logger.debug("Running: bash -c ./" + fileName);
-            Runtime.getRuntime().exec("bash -c", new String[]{"./" + fileName});
+            logger.debug("Running: ./" + fileName);
+            Runtime.getRuntime().exec(new String[]{"./" + fileName});
         }
     }
 

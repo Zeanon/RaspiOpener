@@ -78,8 +78,8 @@ public class Updater {
 
     public void update() {
         try {
-            Main.logger.debug("Exec: bash -c screen -dm ./updater.sh " + repoUrl + " \"" + Main.getArguments() + "\"");
-            Runtime.getRuntime().exec("bash -c", new String[]{"screen", "-dm", "./updater.sh", repoUrl, Main.getArguments()});
+            Main.logger.debug("Exec: screen -dm ./updater.sh " + repoUrl + " \"" + Main.getArguments() + "\"");
+            Runtime.getRuntime().exec(new String[]{"screen", "-dm", "./updater.sh", repoUrl, Main.getArguments()});
         } catch (IOException e) {
             Main.logger.warn(e);
         }
