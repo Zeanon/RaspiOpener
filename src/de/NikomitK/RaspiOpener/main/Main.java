@@ -122,6 +122,7 @@ public class Main {
     }
 
     private static void loadFileFromJar(String fileName, boolean exec) throws IOException, NoSuchAlgorithmException {
+        logger.debug("Loading: " + fileName);
         File file = new File(fileName);
         if (file.exists()) {
             logger.debug("File already exists");
@@ -144,10 +145,10 @@ public class Main {
         }
         fileOutputStream.close();
         logger.debug(file.length() + " bytes loaded");
+        logger.debug("Setting: " + fileName + " executable");
+        file.setExecutable(true);
 
         if (exec) {
-            logger.debug("Setting: " + fileName + " executable");
-            file.setExecutable(true);
             logger.debug("Running: bash -c ./" + fileName);
             Runtime.getRuntime().exec("bash -c", new String[]{"./" + fileName});
         }
