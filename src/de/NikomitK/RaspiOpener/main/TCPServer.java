@@ -29,7 +29,6 @@ public class TCPServer {
             Main.logger.debug("Starting ServerSocket");
             ss = new ServerSocket(5000);
         } catch (IOException e) {
-            e.printStackTrace();
             Main.logger.warn(e);
             System.exit(1);
             return;
@@ -44,7 +43,6 @@ public class TCPServer {
                     Main.logger.debug("Client at " + " " + connected.getInetAddress() + ":" + connected.getPort() + " connected ");
                     handleClient(connected);
                 } catch (IOException e) {
-                    e.printStackTrace();
                     Main.logger.warn(e);
                     try {
                         ss.close();
