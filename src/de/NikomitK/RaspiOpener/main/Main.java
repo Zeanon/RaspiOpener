@@ -52,6 +52,11 @@ public class Main {
             }
         }
 
+        if (specifiedArguments.contains("-h") || specifiedArguments.contains("--help")) {
+            System.out.println("HELP");
+            return;
+        }
+
         logger = new Logger(new File("log.txt"));
         debug = specifiedArguments.contains("-d") || specifiedArguments.contains("--debug");
         strackTrace = specifiedArguments.contains("-s") || specifiedArguments.contains("--stacktrace");
@@ -74,6 +79,16 @@ public class Main {
             resetStorage();
         } else {
             storage.save();
+        }
+
+        for (String s : specifiedArguments) {
+            if (s.startsWith("--updateRepo:")) {
+                Updater.setRepo(s.substring(s.indexOf(':') + 1));
+            }
+        }
+        Updater.UpdateResult updateResult = Updater.checkForUpdate();
+        if (updateResult.getUpdateType() == Updater.UpdateType.UPDATE_AVAILABLE) {
+            logger.log("New update found! " + updateResult.getUpdateVersion());
         }
 
         try {
