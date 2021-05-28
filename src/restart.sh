@@ -2,7 +2,7 @@
 
 sleep 1
 
-if [ -f "RaspiOpener/build/libs/RaspiOpener.jar" ]; then
+if [ -a "RaspiOpener/build/libs/RaspiOpener.jar" ]; then
   mv RaspiOpener.jar RaspiOpener-old.jar
   mv RaspiOpener/build/libs/RaspiOpener.jar .
 fi

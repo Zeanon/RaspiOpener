@@ -112,10 +112,10 @@ public class Main {
         Updater.UpdateResult updateResult = Updater.checkForUpdate();
         if (updateResult.getUpdateType() == UPDATE_AVAILABLE) {
             logger.log("New update found! " + updateResult.getUpdateVersion());
-            if (specifiedArguments.contains("--update")) {
-                logger.debug("Updating now");
-                Updater.update(false);
-            }
+        }
+        if (specifiedArguments.contains("--update")) {
+            logger.debug("Updating now");
+            Updater.update(false);
         }
 
         if (specifiedArguments.contains("--autoUpdate")) {
