@@ -18,12 +18,8 @@ public class Updater {
     @Getter
     private String repoUrl = "https://github.com/Kreck-Projekt/RaspiOpener";
 
-    @Getter
-    private String updateURL = "https://raw.githubusercontent.com/Kreck-Projekt/RaspiOpener/master/src/version.yapion";
-
     public void setRepo(String userName) {
         repoUrl = "https://github.com/" + userName + "/RaspiOpener";
-        updateURL = "https://raw.githubusercontent.com/" + userName + "/RaspiOpener/master/src/version.yapion";
     }
 
     @Getter
@@ -60,7 +56,7 @@ public class Updater {
         }
 
         try {
-            Main.logger.debug("Update check with: " + updateURL);
+            Main.logger.debug("Update check with: " + repoUrl);
             Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl});
 
             remoteVersion = YAPIONParser.parse(new FileInputStream(new File("RaspiOpener/src/version.yapion")));
