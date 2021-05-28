@@ -104,7 +104,11 @@ public class Main {
             }
         }
         Main.logger.debug("Exec: ./getRepo.sh " + Updater.getRepoUrl());
-        Runtime.getRuntime().exec("./getRepo.sh " + Updater.getRepoUrl());
+        try {
+            Runtime.getRuntime().exec("./getRepo.sh " + Updater.getRepoUrl()).waitFor();
+        } catch (InterruptedException e) {
+            System.exit(101);
+        }
         Updater.UpdateResult updateResult = Updater.checkForUpdate();
         if (updateResult.getUpdateType() == UPDATE_AVAILABLE) {
             logger.log("New update found! " + updateResult.getUpdateVersion());
@@ -179,7 +183,11 @@ public class Main {
 
         if (exec) {
             logger.debug("Running: ./" + fileName);
-            Runtime.getRuntime().exec(new String[]{"./" + fileName});
+            try {
+                Runtime.getRuntime().exec(new String[]{"./" + fileName}).waitFor();
+            } catch (InterruptedException e) {
+                System.exit(101);
+            }
         }
     }
 
