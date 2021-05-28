@@ -103,6 +103,7 @@ public class Main {
                 Updater.setRepo(s.substring(s.indexOf(':') + 1));
             }
         }
+        Main.logger.debug("Exec: ./getRepo.sh " + Updater.getRepoUrl());
         Runtime.getRuntime().exec("./getRepo.sh " + Updater.getRepoUrl());
         Updater.UpdateResult updateResult = Updater.checkForUpdate();
         if (updateResult.getUpdateType() == UPDATE_AVAILABLE) {
