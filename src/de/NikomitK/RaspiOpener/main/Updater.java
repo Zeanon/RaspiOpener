@@ -25,6 +25,10 @@ public class Updater {
     @Getter
     private YAPIONObject currentVersion = null;
 
+    @Getter
+    private YAPIONObject remoteVersion = null;
+    private long remoteVersionUpdateTime = 0;
+
     public enum UpdateType {
         UPDATE_AVAILABLE,
         NO_UPDATE,
@@ -42,6 +46,9 @@ public class Updater {
     }
 
     public UpdateResult checkForUpdate() {
+        if (System.currentTimeMillis() - remoteVersionUpdateTime < 60000) {
+            return updateCheck();
+        }
         if (currentVersion == null) {
             currentVersion = YAPIONParser.parse(Updater.class.getResourceAsStream("/version.yapion"));
             Main.logger.debug("CurrentVersion: " + currentVersion);
@@ -50,30 +57,35 @@ public class Updater {
         try {
             Main.logger.debug("Update check with: " + updateURL);
             URL versionCheckUrl = new URL(updateURL);
-            YAPIONObject remoteVersion = YAPIONParser.parse(versionCheckUrl.openStream());
+            remoteVersion = YAPIONParser.parse(versionCheckUrl.openStream());
+            remoteVersionUpdateTime = System.currentTimeMillis();
             Main.logger.debug("RemoteVersion: " + remoteVersion);
-            int remoteBuild = remoteVersion.getPlainValueOrDefault("build", -1);
-            int currentBuild  = currentVersion.getPlainValueOrDefault("build", -1);
-
-            Main.logger.debug("RemoteBuild: " + remoteBuild);
-            Main.logger.debug("CurrentBuild: " + currentBuild);
-
-            if (remoteBuild == -1 || currentBuild == -1) {
-                Main.logger.debug("Update: INVALID");
-                return new UpdateResult(UpdateType.INVALID);
-            }
-
-            if (remoteBuild > currentBuild) {
-                Main.logger.debug("Update: UPDATE_AVAILABLE " + remoteVersion.getValue("version", ""));
-                return new UpdateResult(UpdateType.UPDATE_AVAILABLE, remoteVersion.getValue("version", "").get());
-            }
-            Main.logger.debug("Update: NO_UPDATE");
-            return new UpdateResult(UpdateType.NO_UPDATE);
+            return updateCheck();
         } catch (IOException e) {
             Main.logger.warn("Update: UPDATE_CHECK_FAILED");
             Main.logger.warn(e);
             return new UpdateResult(UpdateType.UPDATE_CHECK_FAILED);
         }
+    }
+
+    private UpdateResult updateCheck() {
+        int remoteBuild = remoteVersion.getPlainValueOrDefault("build", -1);
+        int currentBuild  = currentVersion.getPlainValueOrDefault("build", -1);
+
+        Main.logger.debug("RemoteBuild: " + remoteBuild);
+        Main.logger.debug("CurrentBuild: " + currentBuild);
+
+        if (remoteBuild == -1 || currentBuild == -1) {
+            Main.logger.debug("Update: INVALID");
+            return new UpdateResult(UpdateType.INVALID);
+        }
+
+        if (remoteBuild > currentBuild) {
+            Main.logger.debug("Update: UPDATE_AVAILABLE " + remoteVersion.getValue("version", ""));
+            return new UpdateResult(UpdateType.UPDATE_AVAILABLE, remoteVersion.getValue("version", "").get());
+        }
+        Main.logger.debug("Update: NO_UPDATE");
+        return new UpdateResult(UpdateType.NO_UPDATE);
     }
 
     public void update() {
