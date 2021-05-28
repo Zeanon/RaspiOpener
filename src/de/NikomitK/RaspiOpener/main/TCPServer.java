@@ -176,10 +176,12 @@ public class TCPServer {
                 case 'v':
                     // command syntax: "v:(<hash>);<nonce>"
                     StringBuilder st = new StringBuilder();
-                    st.append(Updater.getCurrentVersion().getValue("version", "").get());
+                    st.append(Updater.getCurrentVersion().getValue("version", "").get()).append(" ");
+                    st.append("(").append(Updater.getCurrentVersion().getValue("build", 0).get()).append(")");
                     Updater.UpdateResult updateResult = handler.checkForUpdate(param);
                     if (updateResult.getUpdateType() == Updater.UpdateType.UPDATE_AVAILABLE) {
-                        st.append(" -> ").append(updateResult.getUpdateVersion());
+                        st.append(";");
+                        st.append(updateResult.getUpdateVersion());
                     }
                     st.append("EOS");
                     Main.logger.log("Version return: " + st);
