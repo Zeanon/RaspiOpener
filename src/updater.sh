@@ -10,7 +10,7 @@ git clone $1
 # 2. Build via gradle
 cd RaspiOpener
 chmod u+x gradlew
-./gradlew build
+./gradlew build --no-daemon
 
 # 3. Move current jar to somewhere else
 cd ..

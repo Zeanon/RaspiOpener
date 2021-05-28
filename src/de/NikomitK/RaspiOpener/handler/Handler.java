@@ -1,11 +1,11 @@
 package de.NikomitK.RaspiOpener.handler;
 
 import de.NikomitK.RaspiOpener.main.Main;
+import de.NikomitK.RaspiOpener.main.Updater;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -161,7 +161,7 @@ public class Handler {
         return Error.OK;
     }
 
-    public void reset(String parameter) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, IOException {
+    public void reset(String parameter) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         int index = parameter.indexOf(';');
         String nonce = parameter.substring(index + 1);
         String encryptedHash = parameter.substring(0, index);
@@ -174,5 +174,37 @@ public class Handler {
 
         Main.logger.log("The Pi was reset");
         Main.resetStorage();
+    }
+
+    public Updater.UpdateResult checkForUpdate(String parameter) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        int index = parameter.indexOf(';');
+        String nonce = parameter.substring(index + 1);
+        String encryptedHash = parameter.substring(0, index);
+
+        String decrpytedHash = Decryption.decrypt(Main.storage.getKey(), nonce, encryptedHash);
+        if (!decrpytedHash.equals(Main.storage.getHash())) {
+            Main.logger.log("Client used a wrong password");
+            return new Updater.UpdateResult(Updater.UpdateType.INVALID);
+        }
+        return Updater.checkForUpdate();
+    }
+
+    public Error update(String parameter) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        int index = parameter.indexOf(';');
+        String nonce = parameter.substring(index + 1);
+        String encryptedHash = parameter.substring(0, index);
+
+        String decrpytedHash = Decryption.decrypt(Main.storage.getKey(), nonce, encryptedHash);
+        if (!decrpytedHash.equals(Main.storage.getHash())) {
+            Main.logger.log("Client used a wrong password");
+            return Error.PASSWORD_MISMATCH;
+        }
+        if (Updater.checkForUpdate().getUpdateType() != Updater.UpdateType.UPDATE_AVAILABLE) {
+            Main.logger.log("No update found");
+            return Error.NO_UPDATE;
+        }
+        Main.logger.log("Updating now!");
+        Updater.update();
+        return Error.OK;
     }
 }

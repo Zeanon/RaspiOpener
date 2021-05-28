@@ -28,7 +28,8 @@ public enum Error {
 
     // Anything else
     SERVER_ERROR("09"),
-    COMMAND_WRONG("10");
+    COMMAND_WRONG("10"),
+    NO_UPDATE("11");
 
     private String errorCode = null;
 

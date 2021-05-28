@@ -87,7 +87,7 @@ public class TCPServer {
             Main.logger.log("Client at: " + connected.getInetAddress() + " sent " + clientCommand.charAt(0) + " command");
 
             processError = true;
-            Error error = processFromClient(clientCommand);
+            Error error = processFromClient(clientCommand, toClient);
             Main.storage.save();
             Main.logger.debug("Error Code " + error + " from executing command '" + clientCommand + "'");
             if (error != Error.OK) {
@@ -117,7 +117,7 @@ public class TCPServer {
         }
     }
 
-    private Error processFromClient(String fromclient) {
+    private Error processFromClient(String fromclient, PrintWriter toClient) {
         String param = fromclient.substring(2);
 
         Error worked = Error.OK;
@@ -172,6 +172,21 @@ public class TCPServer {
                 case 'r': //reset
                     // Command syntax: "r:(<hash>);<nonce>"
                     handler.reset(param);
+                    break;
+
+                case 'v':
+                    // command syntax: "v:(<hash>);<nonce>"
+                    StringBuilder st = new StringBuilder();
+                    st.append(Updater.getCurrentVersion().getValue("version", "").get());
+                    Updater.UpdateResult updateResult = handler.checkForUpdate(param);
+                    if (updateResult.getUpdateType() == Updater.UpdateType.UPDATE_AVAILABLE) {
+                        st.append(" -> ").append(updateResult.getUpdateVersion());
+                    }
+                    toClient.println(st.toString());
+                    break;
+                case 'u':
+                    // command syntax: "u:(<hash>);<nonce>"
+                    worked = handler.update(param);
                     break;
 
                 default:

@@ -135,7 +135,7 @@ public class Main {
             byte[] bytes1 = md5(Main.class.getResourceAsStream("/" + fileName));
             byte[] bytes2 = md5(new FileInputStream(file));
             if (Arrays.equals(bytes1, bytes2)) {
-                logger.debug("File is the same");
+                logger.debug("File did not change");
                 return;
             }
             logger.debug("Update File as it has changed or has been changed");
@@ -150,6 +150,7 @@ public class Main {
             fileOutputStream.write(inputStream.read());
         }
         fileOutputStream.close();
+        inputStream.close();
         logger.debug(file.length() + " bytes loaded");
         logger.debug("Setting: " + fileName + " executable");
         file.setExecutable(true);
@@ -172,6 +173,7 @@ public class Main {
             }
             messageDigest.update((byte) i);
         }
+        inputStream.close();
         return messageDigest.digest();
     }
 }
