@@ -14,7 +14,10 @@ import java.net.URL;
 @UtilityClass
 public class Updater {
 
+    @Getter
     private String repoUrl = "https://github.com/Kreck-Projekt/RaspiOpener";
+
+    @Getter
     private String updateURL = "https://raw.githubusercontent.com/Kreck-Projekt/RaspiOpener/master/src/version.yapion";
 
     public void setRepo(String userName) {
@@ -56,6 +59,7 @@ public class Updater {
         }
 
         try {
+            Runtime.getRuntime().exec("./updateRepo.sh");
             Main.logger.debug("Update check with: " + updateURL);
             URL versionCheckUrl = new URL(updateURL);
             remoteVersion = YAPIONParser.parse(versionCheckUrl.openStream());
@@ -93,6 +97,7 @@ public class Updater {
         try {
             Main.logger.debug("Exec: screen -dm ./updater.sh " + repoUrl + " \"" + Main.getArguments() + "\"");
             Runtime.getRuntime().exec(new String[]{"screen", "-dm", "./updater.sh", repoUrl, Main.getArguments()});
+            System.exit(1);
         } catch (IOException e) {
             Main.logger.warn(e);
         }

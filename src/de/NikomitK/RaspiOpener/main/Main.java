@@ -77,7 +77,7 @@ public class Main {
         logger.debug("CLI Args: " + Arrays.toString(args));
 
         loadFileFromJar("dependencies.sh", true);
-        loadFileFromJar("getRepo.sh", true);
+        loadFileFromJar("getRepo.sh", false);
         loadFileFromJar("updateRepo.sh", false);
         loadFileFromJar("buildRepo.sh", false);
         loadFileFromJar("restart.sh", false);
@@ -103,6 +103,7 @@ public class Main {
                 Updater.setRepo(s.substring(s.indexOf(':') + 1));
             }
         }
+        Runtime.getRuntime().exec("./getRepo.sh " + Updater.getRepoUrl());
         Updater.UpdateResult updateResult = Updater.checkForUpdate();
         if (updateResult.getUpdateType() == UPDATE_AVAILABLE) {
             logger.log("New update found! " + updateResult.getUpdateVersion());
