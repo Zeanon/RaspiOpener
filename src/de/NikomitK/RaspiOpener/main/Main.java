@@ -121,6 +121,7 @@ public class Main {
                     }
                     if (Updater.checkForUpdate().getUpdateType() == UPDATE_AVAILABLE) {
                         Updater.update();
+                        System.exit(0);
                     }
                 }
             });
