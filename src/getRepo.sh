@@ -4,7 +4,7 @@ if [ -d "RaspiOpener" ]; then
   cd RaspiOpener
   originUrl=$(git remote get-url origin)
   cd ..
-  if [ $1 != originUrl ]; then
+  if [ "$1" != "$originUrl" ]; then
     rm -r RaspiOpener
   fi
 fi
