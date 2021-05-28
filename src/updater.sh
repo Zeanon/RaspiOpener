@@ -26,8 +26,7 @@ rm -rf RaspiOpener
 java -jar RaspiOpener.jar $2
 
 # 7. Check on error code, when 101 do the following
-if [ $? -eq 101 ]
-then
+if [ $? -eq 101 ]; then
     # 8. Remove current jar
     rm RaspiOpener.jar
 
