@@ -204,7 +204,7 @@ public class Handler {
             return Error.NO_UPDATE;
         }
         Main.logger.log("Updating now!");
-        Updater.update();
+        Updater.update(true);
         return Error.OK;
     }
 }

@@ -8,8 +8,9 @@ import lombok.experimental.UtilityClass;
 import yapion.hierarchy.types.YAPIONObject;
 import yapion.parser.YAPIONParser;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
 
 @UtilityClass
 public class Updater {
@@ -59,10 +60,10 @@ public class Updater {
         }
 
         try {
-            Runtime.getRuntime().exec("./updateRepo.sh");
             Main.logger.debug("Update check with: " + updateURL);
-            URL versionCheckUrl = new URL(updateURL);
-            remoteVersion = YAPIONParser.parse(versionCheckUrl.openStream());
+            Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl});
+
+            remoteVersion = YAPIONParser.parse(new FileInputStream(new File("RaspiOpener/src/version.yapion")));
             remoteVersionUpdateTime = System.currentTimeMillis();
             Main.logger.debug("RemoteVersion: " + remoteVersion);
             return updateCheck();
@@ -75,7 +76,7 @@ public class Updater {
 
     private UpdateResult updateCheck() {
         int remoteBuild = remoteVersion.getPlainValueOrDefault("build", -1);
-        int currentBuild  = currentVersion.getPlainValueOrDefault("build", -1);
+        int currentBuild = currentVersion.getPlainValueOrDefault("build", -1);
 
         Main.logger.debug("RemoteBuild: " + remoteBuild);
         Main.logger.debug("CurrentBuild: " + currentBuild);
@@ -93,14 +94,23 @@ public class Updater {
         return new UpdateResult(UpdateType.NO_UPDATE);
     }
 
-    public void update() {
-        try {
-            Main.logger.debug("Exec: screen -dm ./updater.sh " + repoUrl + " \"" + Main.getArguments() + "\"");
-            Runtime.getRuntime().exec(new String[]{"screen", "-dm", "./updater.sh", repoUrl, Main.getArguments()});
-            System.exit(0);
-        } catch (IOException e) {
-            Main.logger.warn(e);
+    public void update(boolean threaded) {
+        Runnable updateRunnable = () -> {
+            try {
+                Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl});
+                Runtime.getRuntime().exec("./buildRepo.sh");
+                Runtime.getRuntime().exec(new String[]{"screen", "-dm", "./restart.sh", Main.getArguments()});
+                System.exit(0);
+            } catch (IOException e) {
+                Main.logger.warn(e);
+            }
+        };
+        if (threaded) {
+            Thread thread = new Thread(updateRunnable);
+            thread.setDaemon(true);
+            thread.start();
+        } else {
+            updateRunnable.run();
         }
     }
-
 }
