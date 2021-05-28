@@ -182,10 +182,12 @@ public class TCPServer {
                     if (updateResult.getUpdateType() == Updater.UpdateType.UPDATE_AVAILABLE) {
                         st.append(" -> ").append(updateResult.getUpdateVersion());
                     }
+                    Main.logger.log("Version return: " + st);
                     toClient.println(st.toString());
                     break;
                 case 'u':
                     // command syntax: "u:(<hash>);<nonce>"
+                    Main.logger.log("Start Update");
                     worked = handler.update(param);
                     break;
 

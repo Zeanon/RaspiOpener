@@ -47,6 +47,7 @@ public class Updater {
 
     public UpdateResult checkForUpdate() {
         if (System.currentTimeMillis() - remoteVersionUpdateTime < 60000) {
+            Main.logger.debug("Direct return, Version known");
             return updateCheck();
         }
         if (currentVersion == null) {
