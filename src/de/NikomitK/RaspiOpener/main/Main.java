@@ -63,6 +63,8 @@ public class Main {
             System.out.println("-d or --debug for debug logs");
             System.out.println("-s or --stacktrace for debug with stacktraces");
             System.out.println("-r or --reset for reseting it beforehand");
+            System.out.println("--updateRepo:<GitHubUserName> for specifying an update Repository");
+            System.out.println("--update for updating on startup if needed");
             return;
         }
 
@@ -99,6 +101,12 @@ public class Main {
         Updater.UpdateResult updateResult = Updater.checkForUpdate();
         if (updateResult.getUpdateType() == Updater.UpdateType.UPDATE_AVAILABLE) {
             logger.log("New update found! " + updateResult.getUpdateVersion());
+            if (specifiedArguments.contains("--update")) {
+                logger.debug("Updating now");
+                Updater.update();
+                System.exit(0);
+                return;
+            }
         }
 
         try {
