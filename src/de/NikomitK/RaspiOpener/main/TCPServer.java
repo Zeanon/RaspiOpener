@@ -67,7 +67,6 @@ public class TCPServer {
                 toClient.println("BUT NOT FOR ME");
                 fsu = false;
             }
-            toClient.println("Connected");
             String clientCommand = fromClient.readLine();
             Main.logger.debug("Received: " + clientCommand);
 
