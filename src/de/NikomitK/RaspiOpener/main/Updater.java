@@ -8,9 +8,7 @@ import lombok.experimental.UtilityClass;
 import yapion.hierarchy.types.YAPIONObject;
 import yapion.parser.YAPIONParser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 @UtilityClass
 public class Updater {
@@ -57,7 +55,7 @@ public class Updater {
 
         try {
             Main.logger.debug("Update check with: " + repoUrl);
-            Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl});
+            process(Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl}));
 
             remoteVersion = YAPIONParser.parse(new FileInputStream(new File("./RaspiOpener/src/version.yapion")));
             remoteVersionUpdateTime = System.currentTimeMillis();
@@ -66,6 +64,11 @@ public class Updater {
         } catch (IOException e) {
             Main.logger.warn("Update: UPDATE_CHECK_FAILED");
             Main.logger.warn(e);
+            return new UpdateResult(UpdateType.UPDATE_CHECK_FAILED);
+        } catch (InterruptedException e) {
+            Main.logger.warn("Update: UPDATE_CHECK_FAILED");
+            Main.logger.warn(e);
+            Thread.currentThread().interrupt();
             return new UpdateResult(UpdateType.UPDATE_CHECK_FAILED);
         }
     }
@@ -94,11 +97,11 @@ public class Updater {
         Runnable updateRunnable = () -> {
             try {
                 Main.logger.debug("Exec: ./updateRepo.sh " + repoUrl);
-                Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl}).waitFor();
+                process(Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl}));
                 Main.logger.debug("Exec: ./buildRepo.sh");
-                Runtime.getRuntime().exec("./buildRepo.sh").waitFor();
+                process(Runtime.getRuntime().exec("./buildRepo.sh"));
                 Main.logger.debug("Exec: screen -dm ./restart.sh \"" + Main.getArguments() + "\"");
-                Runtime.getRuntime().exec(new String[]{"screen", "-dm", "./restart.sh \"", Main.getArguments() + "\""}).waitFor();
+                process(Runtime.getRuntime().exec(new String[]{"screen", "-dm", "./restart.sh \"", Main.getArguments() + "\""}));
                 Main.logger.debug("Exiting");
                 System.exit(0);
             } catch (IOException e) {
@@ -115,5 +118,17 @@ public class Updater {
         } else {
             updateRunnable.run();
         }
+    }
+
+    public void process(Process process) throws IOException, InterruptedException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        while (process.isAlive()) {
+            if (bufferedReader.ready()) {
+                Main.logger.log(bufferedReader.readLine());
+            }
+        }
+        bufferedReader.lines().forEach(s -> {
+            Main.logger.log(s);
+        });
     }
 }

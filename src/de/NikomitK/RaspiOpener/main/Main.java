@@ -104,11 +104,7 @@ public class Main {
             }
         }
         Main.logger.debug("Exec: ./getRepo.sh " + Updater.getRepoUrl());
-        try {
-            Runtime.getRuntime().exec("./getRepo.sh " + Updater.getRepoUrl()).waitFor();
-        } catch (InterruptedException e) {
-            System.exit(101);
-        }
+        Updater.process(Runtime.getRuntime().exec("./getRepo.sh " + Updater.getRepoUrl()));
         Updater.UpdateResult updateResult = Updater.checkForUpdate();
         if (updateResult.getUpdateType() == UPDATE_AVAILABLE) {
             logger.log("New update found! " + updateResult.getUpdateVersion());
