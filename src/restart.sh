@@ -1,19 +1,5 @@
 #!/usr/bin/bash
 
-# Needs to be detached in a screen like 'screen -dm ./updater.sh'
-
-sleep 1
-
-# 1. Download git repo
-git clone $1
-
-# 2. Build via gradle
-cd RaspiOpener
-chmod u+x gradlew
-./gradlew build --no-daemon
-
-# 3. Move current jar to somewhere else
-cd ..
 mv RaspiOpener.jar RaspiOpener-old.jar
 
 # 4. Move builded jar to current location

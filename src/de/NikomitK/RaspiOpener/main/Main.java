@@ -77,7 +77,10 @@ public class Main {
         logger.debug("CLI Args: " + Arrays.toString(args));
 
         loadFileFromJar("dependencies.sh", true);
-        loadFileFromJar("updater.sh", false);
+        loadFileFromJar("getRepo.sh", true);
+        loadFileFromJar("updateRepo.sh", false);
+        loadFileFromJar("buildRepo.sh", false);
+        loadFileFromJar("restart.sh", false);
         loadFileFromJar("bluetooth.sh", false);
 
         logger.log("Loading Storage");
