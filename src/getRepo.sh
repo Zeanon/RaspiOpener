@@ -6,6 +6,8 @@ if [ -d "RaspiOpener" ]; then
   cd ..
   if [ "$1" != "$originUrl" ]; then
     rm -r RaspiOpener
+  else
+    exit 0
   fi
 fi
 
