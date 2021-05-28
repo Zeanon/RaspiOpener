@@ -2,13 +2,10 @@
 
 sleep 1
 
-mv RaspiOpener.jar RaspiOpener-old.jar
-
-# 4. Move builded jar to current location
-mv RaspiOpener/build/libs/RaspiOpener.jar .
-
-# 5. Remove git dir
-rm -rf RaspiOpener
+if [ -f "RaspiOpener/build/libs/RaspiOpener.jar" ]; then
+  mv RaspiOpener.jar RaspiOpener-old.jar
+  mv RaspiOpener/build/libs/RaspiOpener.jar .
+fi
 
 # 6. Start jar
 java -jar RaspiOpener.jar $1
