@@ -94,15 +94,17 @@ public class Updater {
         Runnable updateRunnable = () -> {
             try {
                 Main.logger.debug("Exec: ./updaterRepo.sh " + repoUrl);
-                Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl});
+                Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl}).waitFor();
                 Main.logger.debug("Exec: ./buildRepo.sh");
-                Runtime.getRuntime().exec("./buildRepo.sh");
+                Runtime.getRuntime().exec("./buildRepo.sh").waitFor();
                 Main.logger.debug("Exec: screen -dm ./restart.sh " + Main.getArguments());
                 Runtime.getRuntime().exec(new String[]{"screen", "-dm", "./restart.sh \"", Main.getArguments() + "\""});
                 Main.logger.debug("Exiting");
                 System.exit(0);
             } catch (IOException e) {
-                e.printStackTrace();
+                Main.logger.warn(e);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 Main.logger.warn(e);
             }
         };
