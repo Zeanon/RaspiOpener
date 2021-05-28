@@ -59,7 +59,7 @@ public class Updater {
             Main.logger.debug("Update check with: " + repoUrl);
             Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl});
 
-            remoteVersion = YAPIONParser.parse(new FileInputStream(new File("RaspiOpener/src/version.yapion")));
+            remoteVersion = YAPIONParser.parse(new FileInputStream(new File("./RaspiOpener/src/version.yapion")));
             remoteVersionUpdateTime = System.currentTimeMillis();
             Main.logger.debug("RemoteVersion: " + remoteVersion);
             return updateCheck();
