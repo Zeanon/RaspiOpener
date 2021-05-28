@@ -65,11 +65,6 @@ public class Updater {
             Main.logger.warn("Update: UPDATE_CHECK_FAILED");
             Main.logger.warn(e);
             return new UpdateResult(UpdateType.UPDATE_CHECK_FAILED);
-        } catch (InterruptedException e) {
-            Main.logger.warn("Update: UPDATE_CHECK_FAILED");
-            Main.logger.warn(e);
-            Thread.currentThread().interrupt();
-            return new UpdateResult(UpdateType.UPDATE_CHECK_FAILED);
         }
     }
 
@@ -106,9 +101,6 @@ public class Updater {
                 System.exit(0);
             } catch (IOException e) {
                 Main.logger.warn(e);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                Main.logger.warn(e);
             }
         };
         if (threaded) {
@@ -120,7 +112,7 @@ public class Updater {
         }
     }
 
-    public void process(Process process) throws IOException, InterruptedException {
+    public void process(Process process) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (process.isAlive()) {
             if (bufferedReader.ready()) {
