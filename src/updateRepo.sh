@@ -1,4 +1,8 @@
 #!/usr/bin/bash
 
-cd RaspiOpener || exit 1
+if [ ! -d "RaspiOpener" ]; then
+  git clone $1
+fi
+
+cd RaspiOpener
 git update

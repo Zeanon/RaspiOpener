@@ -97,7 +97,7 @@ public class Updater {
         try {
             Main.logger.debug("Exec: screen -dm ./updater.sh " + repoUrl + " \"" + Main.getArguments() + "\"");
             Runtime.getRuntime().exec(new String[]{"screen", "-dm", "./updater.sh", repoUrl, Main.getArguments()});
-            System.exit(1);
+            System.exit(0);
         } catch (IOException e) {
             Main.logger.warn(e);
         }

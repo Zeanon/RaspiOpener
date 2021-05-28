@@ -110,8 +110,6 @@ public class Main {
             if (specifiedArguments.contains("--update")) {
                 logger.debug("Updating now");
                 Updater.update();
-                System.exit(0);
-                return;
             }
         }
 
@@ -125,7 +123,6 @@ public class Main {
                     }
                     if (Updater.checkForUpdate().getUpdateType() == UPDATE_AVAILABLE) {
                         Updater.update();
-                        System.exit(0);
                     }
                 }
             });

@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+sleep 1
+
 mv RaspiOpener.jar RaspiOpener-old.jar
 
 # 4. Move builded jar to current location
@@ -9,7 +11,7 @@ mv RaspiOpener/build/libs/RaspiOpener.jar .
 rm -rf RaspiOpener
 
 # 6. Start jar
-java -jar RaspiOpener.jar $2
+java -jar RaspiOpener.jar $1
 
 # 7. Check on error code, when 101 do the following
 if [ $? -eq 101 ]; then
@@ -20,5 +22,5 @@ if [ $? -eq 101 ]; then
     cp RaspiOpener-old.jar RaspiOpener.jar
 
     # 10. Start old jar
-    java -jar RaspiOpener.jar $2
+    java -jar RaspiOpener.jar $1
 fi
