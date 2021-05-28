@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static de.NikomitK.RaspiOpener.main.Updater.UpdateType.UPDATE_AVAILABLE;
+
 public class Main {
 
     @Getter
@@ -99,7 +101,7 @@ public class Main {
             }
         }
         Updater.UpdateResult updateResult = Updater.checkForUpdate();
-        if (updateResult.getUpdateType() == Updater.UpdateType.UPDATE_AVAILABLE) {
+        if (updateResult.getUpdateType() == UPDATE_AVAILABLE) {
             logger.log("New update found! " + updateResult.getUpdateVersion());
             if (specifiedArguments.contains("--update")) {
                 logger.debug("Updating now");
@@ -107,6 +109,23 @@ public class Main {
                 System.exit(0);
                 return;
             }
+        }
+
+        if (specifiedArguments.contains("--autoUpdate")) {
+            Thread thread = new Thread(() -> {
+                while (true) {
+                    try {
+                        Thread.sleep(90000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    if (Updater.checkForUpdate().getUpdateType() == UPDATE_AVAILABLE) {
+                        Updater.update();
+                    }
+                }
+            });
+            thread.setDaemon(true);
+            thread.start();
         }
 
         try {
