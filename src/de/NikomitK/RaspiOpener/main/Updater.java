@@ -116,11 +116,11 @@ public class Updater {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (process.isAlive()) {
             if (bufferedReader.ready()) {
-                Main.logger.log(bufferedReader.readLine());
+                Main.logger.debug(bufferedReader.readLine());
             }
         }
         bufferedReader.lines().forEach(s -> {
-            Main.logger.log(s);
+            Main.logger.debug(s);
         });
     }
 }
