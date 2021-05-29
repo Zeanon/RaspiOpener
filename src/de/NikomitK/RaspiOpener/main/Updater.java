@@ -95,8 +95,8 @@ public class Updater {
                 process(Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl}));
                 Main.logger.debug("Exec: ./buildRepo.sh");
                 process(Runtime.getRuntime().exec("./buildRepo.sh"));
-                Main.logger.debug("Exec: screen -dm ./restart.sh \"" + Main.getArguments() + "\"");
-                process(Runtime.getRuntime().exec("screen -dmL", new String[]{"bash", "-c", "./restart.sh", "\"", Main.getArguments() + "\""}));
+                Main.logger.debug("Exec: screen -dmS RaspiOpener bash -c \"./restart.sh '" + Main.getArguments() + "'\"");
+                process(Runtime.getRuntime().exec("screen -dmS RaspiOpener", new String[]{"bash", "-c", "\"./restart.sh '" + Main.getArguments() + "'\""}));
                 Main.logger.debug("Exiting");
                 System.exit(0);
             } catch (IOException e) {
