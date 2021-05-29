@@ -8,7 +8,7 @@ if [ -a "RaspiOpener/build/libs/RaspiOpener.jar" ]; then
 fi
 
 # 6. Start jar
-java -jar RaspiOpener.jar $1
+java -jar RaspiOpener.jar "$@"
 
 # 7. Check on error code, when 101 do the following
 if [ $? -eq 101 ]; then
@@ -19,5 +19,5 @@ if [ $? -eq 101 ]; then
     cp RaspiOpener-old.jar RaspiOpener.jar
 
     # 10. Start old jar
-    java -jar RaspiOpener.jar $1
+    java -jar RaspiOpener.jar "$@"
 fi

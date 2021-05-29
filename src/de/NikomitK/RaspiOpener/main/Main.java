@@ -80,6 +80,7 @@ public class Main {
         loadFileFromJar("getRepo.sh", false);
         loadFileFromJar("updateRepo.sh", false);
         loadFileFromJar("buildRepo.sh", false);
+        loadFileFromJar("preRestart.sh", false);
         loadFileFromJar("restart.sh", false);
         loadFileFromJar("bluetooth.sh", false);
 
