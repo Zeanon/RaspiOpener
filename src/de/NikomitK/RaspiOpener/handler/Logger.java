@@ -34,6 +34,18 @@ public class Logger {
         }
     }
 
+    public void bash(String message) {
+        if (!Main.isDebug()) {
+            return;
+        }
+
+        try {
+            internalLog(dateFormat.format(new Date()) + " [BASH ] " + message + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void debug(String message) {
         if (!Main.isDebug()) {
             return;
