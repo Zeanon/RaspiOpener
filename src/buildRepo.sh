@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 cd RaspiOpener || exit 1
 chmod u+x gradlew

@@ -96,7 +96,7 @@ public class Updater {
                 Main.logger.debug("Exec: ./buildRepo.sh");
                 process(Runtime.getRuntime().exec("./buildRepo.sh"));
                 Main.logger.debug("Exec: screen -dm ./restart.sh \"" + Main.getArguments() + "\"");
-                process(Runtime.getRuntime().exec("screen -dm", new String[]{"./restart.sh", "\"", Main.getArguments() + "\""}));
+                process(Runtime.getRuntime().exec("screen -dmL", new String[]{"./restart.sh", "\"", Main.getArguments() + "\""}));
                 Main.logger.debug("Exiting");
                 System.exit(0);
             } catch (IOException e) {
