@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep 1
+sleep 10
 
 if [ -a "RaspiOpener/build/libs/RaspiOpener.jar" ]; then
   mv RaspiOpener.jar RaspiOpener-old.jar
