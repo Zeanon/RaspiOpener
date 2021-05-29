@@ -119,7 +119,7 @@ public class Main {
             Thread thread = new Thread(() -> {
                 while (true) {
                     try {
-                        Thread.sleep(1000 * 60 * 10);
+                        Thread.sleep(1000L * 60 * 10);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
