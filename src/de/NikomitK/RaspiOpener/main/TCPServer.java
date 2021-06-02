@@ -182,6 +182,10 @@ public class TCPServer {
                     if (updateResult.getUpdateType() == Updater.UpdateType.UPDATE_AVAILABLE) {
                         st.append(";");
                         st.append(updateResult.getUpdateVersion());
+                        if (updateResult.getUpdateDescription() != null) {
+                            st.append(";");
+                            st.append(updateResult.getUpdateDescription());
+                        }
                     }
                     st.append("EOS");
                     Main.logger.log("Version return: " + st);

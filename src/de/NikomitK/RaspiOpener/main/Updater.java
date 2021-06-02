@@ -41,6 +41,7 @@ public class Updater {
     public static class UpdateResult {
         private final UpdateType updateType;
         private String updateVersion = "";
+        private String updateDescription = null;
     }
 
     public UpdateResult checkForUpdate() {
@@ -82,7 +83,11 @@ public class Updater {
 
         if (remoteBuild > currentBuild) {
             Main.logger.debug("Update: UPDATE_AVAILABLE " + remoteVersion.getValue("version", ""));
-            return new UpdateResult(UpdateType.UPDATE_AVAILABLE, remoteVersion.getValue("version", "").get() + " (" + remoteVersion.getValue("build", 0).get() + ")");
+            String description = null;
+            if (remoteVersion.containsKey("description", String.class)) {
+                description = remoteVersion.getPlainValue("description");
+            }
+            return new UpdateResult(UpdateType.UPDATE_AVAILABLE, remoteVersion.getValue("version", "").get() + " (" + remoteVersion.getValue("build", 0).get() + ")", description);
         }
         Main.logger.debug("Update: NO_UPDATE");
         return new UpdateResult(UpdateType.NO_UPDATE);
