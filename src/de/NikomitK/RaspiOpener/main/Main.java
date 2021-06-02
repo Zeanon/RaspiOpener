@@ -115,7 +115,7 @@ public class Main {
             }
         }
 
-        if (specifiedArguments.contains("--autoUpdate")) {
+        if (specifiedArguments.contains("--autoUpdate") && debug) {
             Thread thread = new Thread(() -> {
                 while (true) {
                     try {
