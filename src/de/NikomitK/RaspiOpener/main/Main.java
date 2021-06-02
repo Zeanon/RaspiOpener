@@ -67,6 +67,7 @@ public class Main {
             System.out.println("-r or --reset for reseting it beforehand");
             System.out.println("--updateRepo:<GitHubUserName> for specifying an update Repository");
             System.out.println("--update for updating on startup if needed");
+            System.out.println("--autoUpdate only with debug");
             return;
         }
 
