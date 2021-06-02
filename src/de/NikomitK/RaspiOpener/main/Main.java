@@ -83,6 +83,7 @@ public class Main {
         loadFileFromJar("buildRepo.sh", false);
         loadFileFromJar("preRestart.sh", false);
         loadFileFromJar("restart.sh", false);
+        loadFileFromJar("gpio.sh", false);
         loadFileFromJar("bluetooth.sh", false);
 
         logger.log("Loading Storage");

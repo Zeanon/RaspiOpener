@@ -93,7 +93,13 @@ public class Updater {
         return new UpdateResult(UpdateType.NO_UPDATE);
     }
 
+    private boolean running = false;
+
     public void update(boolean threaded) {
+        if (running) {
+            return;
+        }
+        running = true;
         Runnable updateRunnable = () -> {
             try {
                 Main.logger.debug("Exec: ./updateRepo.sh " + repoUrl);
