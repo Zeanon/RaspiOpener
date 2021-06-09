@@ -1,5 +1,5 @@
 {
-    build(19)
+    build(20)
     version(0.1.0)
-    description(Fixed open 'door' functionality\nFixed update flooding)
+    description(Add update scheduler\nAdd update cancel for scheduled updates)
 }
