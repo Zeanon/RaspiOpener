@@ -195,6 +195,19 @@ public class Handler {
         String encryptedHash = parameter.substring(0, index);
 
         String decrpytedHash = Decryption.decrypt(Main.storage.getKey(), nonce, encryptedHash);
+        long offset = 0;
+        if (decrpytedHash.contains(";")) {
+            index = decrpytedHash.indexOf(';');
+            try {
+                offset = Long.parseLong(decrpytedHash.substring(0, index));
+            } catch (NumberFormatException e) {
+                return Error.SERVER_ERROR;
+            }
+            if (offset < 0 || offset > 86400000) {
+                return Error.SERVER_ERROR;
+            }
+            decrpytedHash = decrpytedHash.substring(index + 1);
+        }
         if (!decrpytedHash.equals(Main.storage.getHash())) {
             Main.logger.log("Client used a wrong password");
             return Error.PASSWORD_MISMATCH;
@@ -203,8 +216,7 @@ public class Handler {
             Main.logger.log("No update found");
             return Error.NO_UPDATE;
         }
-        Main.logger.log("Updating now!");
-        Updater.update(true);
+        Updater.update(true, offset);
         return Error.OK;
     }
 }

@@ -94,13 +94,37 @@ public class Updater {
     }
 
     private boolean running = false;
+    private boolean updateCanceled = false;
 
-    public void update(boolean threaded) {
-        if (running) {
+    public void update(boolean threaded, long timeOffset) {
+        if (timeOffset < 0) {
+            running = false;
+            updateCanceled = true;
+            Main.logger.log("Stop Update");
             return;
         }
+        if (running || updateCanceled) {
+            return;
+        }
+        Main.logger.log("Start Update");
+        if (timeOffset > 0) {
+            threaded = true;
+        }
         running = true;
+        long updateTime = System.currentTimeMillis() + timeOffset;
         Runnable updateRunnable = () -> {
+            while (running && System.currentTimeMillis() < updateTime) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            if (!running) {
+                updateCanceled = false;
+                return;
+            }
+            Main.logger.log("Updating now!");
             try {
                 Main.logger.debug("Exec: ./updateRepo.sh " + repoUrl);
                 process(Runtime.getRuntime().exec("./updateRepo.sh", new String[]{repoUrl}));

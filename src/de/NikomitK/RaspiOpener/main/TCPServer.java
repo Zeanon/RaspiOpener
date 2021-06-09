@@ -193,7 +193,7 @@ public class TCPServer {
                     break;
                 case 'u':
                     // command syntax: "u:(<hash>);<nonce>"
-                    Main.logger.log("Start Update");
+                    // command syntax: "u:(<offset>;<hash>);<nonce>"
                     worked = handler.update(param);
                     break;
 
