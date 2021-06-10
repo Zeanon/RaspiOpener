@@ -113,7 +113,7 @@ public class Main {
             logger.log("New update found! " + updateResult.getUpdateVersion());
             if (specifiedArguments.contains("--update")) {
                 logger.debug("Updating now");
-                Updater.update(false);
+                Updater.update(false, 0);
             }
         }
 
@@ -126,7 +126,7 @@ public class Main {
                         Thread.currentThread().interrupt();
                     }
                     if (Updater.checkForUpdate().getUpdateType() == UPDATE_AVAILABLE) {
-                        Updater.update(false);
+                        Updater.update(false, 0);
                     }
                 }
             });
